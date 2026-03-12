@@ -14,7 +14,16 @@ For local model (free, recommended for POC):
     2. Pull model: ollama pull biomistral  (or: ollama pull mistral)
     3. Set LLM_PROVIDER = "ollama" below
 
-For Claude API (best reasoning, small cost):
+For Groq API (FREE, fastest — recommended for development):
+    1. Sign up at console.groq.com (free, no credit card)
+    2. Generate API key
+    3. Set LLM_PROVIDER = "groq" below
+    4. pip install groq
+    5. Set GROQ_API_KEY environment variable
+       Windows:      set GROQ_API_KEY=gsk_your_key_here
+       macOS/Linux:  export GROQ_API_KEY=gsk_your_key_here
+
+For Claude API (best reasoning quality, small cost):
     1. Set LLM_PROVIDER = "claude"
     2. Set ANTHROPIC_API_KEY environment variable
 
@@ -33,10 +42,19 @@ from dataclasses import dataclass, field, asdict
 # CONFIG — Change these for your setup
 # ──────────────────────────────────────────────
 
-LLM_PROVIDER = "ollama"         # "ollama" | "claude" | "openai" | "mock"
+LLM_PROVIDER = "groq"           # "groq" | "ollama" | "claude" | "mock"
+                                # ↑ RECOMMENDED: Groq is free, fastest, no install needed
+
+# Groq settings (FREE — get key at console.groq.com)
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_MODEL = "llama-3.3-70b-versatile"  # Best reasoning on Groq free tier
+                                         # Alt: "mixtral-8x7b-32768" | "gemma2-9b-it"
+
+# Ollama settings (free local model — requires Ollama installed)
 OLLAMA_MODEL = "mistral"        # "biomistral" | "meditron" | "mistral" | "llama3"
 OLLAMA_BASE_URL = "http://localhost:11434"
 
+# API keys for cloud providers
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 
@@ -231,7 +249,49 @@ class ClaudeClient:
             raise RuntimeError(f"Claude API error: {e}")
 
 
-class MockClient:
+class GroqClient:
+    """
+    Groq API — FREE, ultra-fast inference (~0.5s/claim).
+    Best choice for development and testing.
+    Get free API key at: console.groq.com (no credit card needed)
+    Install: pip install groq
+    """
+
+    def __init__(self, api_key: str, model: str):
+        if not api_key:
+            raise ValueError(
+                "GROQ_API_KEY not set.\n"
+                "  1. Sign up free at console.groq.com\n"
+                "  2. Generate an API key\n"
+                "  Windows:     set GROQ_API_KEY=gsk_your_key\n"
+                "  macOS/Linux: export GROQ_API_KEY=gsk_your_key"
+            )
+        self.api_key = api_key
+        self.model = model
+
+    def call(self, system: str, user: str) -> str:
+        try:
+            from groq import Groq
+            client = Groq(api_key=self.api_key)
+            response = client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user}
+                ],
+                temperature=0.1,
+                max_tokens=1024
+            )
+            return response.choices[0].message.content.strip()
+        except ImportError:
+            raise RuntimeError(
+                "groq package not installed. Run: pip install groq"
+            )
+        except Exception as e:
+            raise RuntimeError(f"Groq API error: {e}")
+
+
+
     """Mock LLM for testing without any API/model — returns deterministic results."""
 
     def call(self, system: str, user: str) -> str:
@@ -263,19 +323,23 @@ class MockClient:
 
 def get_llm_client(provider: str):
     """Factory function to get the appropriate LLM client."""
-    if provider == "ollama":
+    if provider == "groq":
+        print(f"  Using: Groq API ({GROQ_MODEL}) — ultra-fast free inference")
+        print(f"  Tip: Get free key at console.groq.com if not set")
+        return GroqClient(GROQ_API_KEY, GROQ_MODEL)
+    elif provider == "ollama":
         print(f"  Using: Ollama ({OLLAMA_MODEL}) at {OLLAMA_BASE_URL}")
         print(f"  Tip: Run 'ollama pull {OLLAMA_MODEL}' if not already downloaded")
         return OllamaClient(OLLAMA_MODEL, OLLAMA_BASE_URL)
     elif provider == "claude":
-        print("  Using: Claude claude-sonnet-4-5 (Anthropic API)")
+        print("  Using: Claude claude-sonnet-4-5 (Anthropic API — best quality)")
         return ClaudeClient(ANTHROPIC_API_KEY)
     elif provider == "mock":
         print("  Using: Mock LLM (for testing — no real AI inference)")
-        return MockClient()
+        return MockClient() # type: ignore
     else:
         print("  Unknown provider. Falling back to mock.")
-        return MockClient()
+        return MockClient() # type: ignore
 
 
 # ──────────────────────────────────────────────
@@ -296,8 +360,8 @@ class FWAVectorStore:
 
     def _init(self):
         try:
-            import chromadb
-            from chromadb.config import Settings
+            import chromadb # type: ignore
+            from chromadb.config import Settings # type: ignore
             self.client = chromadb.Client(Settings(anonymized_telemetry=False))
             self.collection = self.client.create_collection("fwa_cases")
             self._seed_known_cases()
@@ -633,8 +697,17 @@ if __name__ == "__main__":
     print(f"  Max claims    : {MAX_CLAIMS_TO_ANALYZE}")
     print(f"  Min risk score: {MIN_RISK_SCORE}/100")
 
-    # If Ollama not available, auto-fallback to mock
-    if LLM_PROVIDER == "ollama":
+    # Auto-fallback logic
+    if LLM_PROVIDER == "groq":
+        if not GROQ_API_KEY:
+            print(f"\n  ⚠ GROQ_API_KEY not set.")
+            print("  → Get a free key at console.groq.com (takes 2 min, no credit card)")
+            print("  → Windows:     set GROQ_API_KEY=gsk_your_key")
+            print("  → macOS/Linux: export GROQ_API_KEY=gsk_your_key")
+            print("  → Falling back to MOCK mode for now\n")
+            LLM_PROVIDER = "mock"
+
+    elif LLM_PROVIDER == "ollama":
         try:
             import requests
             requests.get(f"{OLLAMA_BASE_URL}/api/tags", timeout=3)
