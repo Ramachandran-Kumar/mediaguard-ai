@@ -60,7 +60,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 
 INPUT_FILE = "output/ai_review_queue.csv"
 OUTPUT_FILE = "output/fwa_ai_report.csv"
-MAX_CLAIMS_TO_ANALYZE = 20      # Limit for POC demo (each LLM call ~2–10 sec)
+MAX_CLAIMS_TO_ANALYZE = 20      # Set to 1 for debug run — change back to 20 after fix
 MIN_RISK_SCORE = 70             # Only analyze claims above this threshold
 
 ENABLE_VECTOR_SEARCH = False    # Set True if ChromaDB installed (pip install chromadb)
@@ -292,6 +292,7 @@ class GroqClient:
 
 
 
+class MockClient:
     """Mock LLM for testing without any API/model — returns deterministic results."""
 
     def call(self, system: str, user: str) -> str:
@@ -336,10 +337,10 @@ def get_llm_client(provider: str):
         return ClaudeClient(ANTHROPIC_API_KEY)
     elif provider == "mock":
         print("  Using: Mock LLM (for testing — no real AI inference)")
-        return MockClient() # type: ignore
+        return MockClient()
     else:
         print("  Unknown provider. Falling back to mock.")
-        return MockClient() # type: ignore
+        return MockClient()
 
 
 # ──────────────────────────────────────────────
@@ -360,8 +361,8 @@ class FWAVectorStore:
 
     def _init(self):
         try:
-            import chromadb # type: ignore
-            from chromadb.config import Settings # type: ignore
+            import chromadb
+            from chromadb.config import Settings
             self.client = chromadb.Client(Settings(anonymized_telemetry=False))
             self.collection = self.client.create_collection("fwa_cases")
             self._seed_known_cases()
