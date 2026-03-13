@@ -75,19 +75,49 @@ CPT_REFERENCE = {
 
 # ICD-10 reference: code → description, valid for which CPTs
 ICD_REFERENCE = {
+    # ── Musculoskeletal ───────────────────────────────────────────────────────
     "M17.11": {"desc": "Primary osteoarthritis, right knee",    "valid_cpts": ["27447", "29881", "97110"]},
     "M17.12": {"desc": "Primary osteoarthritis, left knee",     "valid_cpts": ["27447", "29881", "97110"]},
     "M16.11": {"desc": "Primary osteoarthritis, right hip",     "valid_cpts": ["27130"]},
-    "M25.361": {"desc": "Stiffness of right knee",              "valid_cpts": ["97110", "97035", "99213"]},
+    # M25.361 is hip stiffness — knee replacement (27447) is intentionally NOT valid here
+    # This is the ICD_CPT_MISMATCH fraud scenario: hip diagnosis billed with knee surgery
+    "M25.361": {"desc": "Stiffness of right hip",               "valid_cpts": ["97110", "97035", "99213"]},
+
+    # ── Cardiovascular ────────────────────────────────────────────────────────
     "I10":    {"desc": "Essential hypertension",                "valid_cpts": ["99213", "99214", "93000", "80053"]},
     "I25.10": {"desc": "Atherosclerotic heart disease",         "valid_cpts": ["93000", "93306", "99214", "99215"]},
+    "R00.0":  {"desc": "Tachycardia, unspecified",             "valid_cpts": ["93000", "99213", "99214"]},
+
+    # ── Gastrointestinal ──────────────────────────────────────────────────────
     "Z12.11": {"desc": "Encounter for colorectal cancer screen","valid_cpts": ["45378", "45380"]},
     "K57.30": {"desc": "Diverticulosis of large intestine",     "valid_cpts": ["45378", "45380"]},
+
+    # ── Neurological / Mental Health ──────────────────────────────────────────
     "G43.909": {"desc": "Migraine, unspecified",               "valid_cpts": ["70553", "99214", "99215"]},
     "F32.1":  {"desc": "Major depressive disorder, moderate",  "valid_cpts": ["90837", "99214"]},
-    "E11.9":  {"desc": "Type 2 diabetes without complications", "valid_cpts": ["99213", "99214", "80053", "85025"]},
+
+    # ── Endocrine ─────────────────────────────────────────────────────────────
+    # 36415 (venipuncture) is valid for diabetes — routine blood draws for HbA1c, glucose monitoring
+    "E11.9":  {"desc": "Type 2 diabetes without complications", "valid_cpts": ["99213", "99214", "80053", "85025", "36415"]},
+
+    # ── Respiratory ───────────────────────────────────────────────────────────
+    # J18.9 (pneumonia) → 71046 (chest X-ray) is the standard first-line diagnostic
     "J06.9":  {"desc": "Acute upper respiratory infection",     "valid_cpts": ["99212", "99213"]},
-    "R00.0":  {"desc": "Tachycardia, unspecified",             "valid_cpts": ["93000", "99213", "99214"]},
+    "J18.9":  {"desc": "Pneumonia, unspecified",               "valid_cpts": ["71046", "99213", "99214", "99232", "99233"]},
+
+    # ── Genitourinary ─────────────────────────────────────────────────────────
+    # N39.0 (UTI) can require inpatient admission — 99232 is standard inpatient follow-up E&M
+    "N39.0":  {"desc": "Urinary tract infection",              "valid_cpts": ["99213", "99214", "99232", "87088", "81001"]},
+
+    # ── Oncology ─────────────────────────────────────────────────────────────
+    # C34.11 (lung cancer) always warrants high-complexity E&M (99215)
+    "C34.11": {"desc": "Malignant neoplasm upper lobe lung",   "valid_cpts": ["99215", "99214", "71046", "71250"]},
+
+    # ── Preventive / Wellness ─────────────────────────────────────────────────
+    # Z00.00 (wellness exam) → 36415 is billed as standalone venipuncture WITHOUT an
+    # associated lab order — this is the MEDICALLY_UNNECESSARY FWA scenario.
+    # 36415 is intentionally NOT in valid_cpts here so the rule engine flags it correctly.
+    "Z00.00": {"desc": "General adult medical exam",           "valid_cpts": ["99395", "99396", "99397"]},
 }
 
 # NCCI bundling rules: if CPT_A is billed with CPT_B on same day → violation

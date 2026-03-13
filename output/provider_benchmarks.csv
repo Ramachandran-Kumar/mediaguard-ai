@@ -1,6 +1,6 @@
 provider_npi,provider_name,provider_specialty,provider_state,total_claims,total_billed,avg_billed,unique_patients,pct_99215,weekend_billing_rate,high_risk_claims,flagged_claims,avg_composite_risk,max_composite_risk,flag_rate_pct
 1234567893,Dr. James Williams,Cardiology,NY,1,85.0,85.0,1,0.0,0.0,0,0,50.0,50.0,0.0
-1234567890,Dr. Sarah Johnson,Internal Medicine,TX,31,4121.0,132.94,26,73.3,32.3,5,25,47.5,93.2,80.6
-1234567891,Dr. Michael Chen,Family Practice,FL,10,282.0,28.2,10,0.0,30.0,0,9,43.0,44.1,90.0
-1234567892,Dr. Patricia Moore,Orthopedic Surgery,CA,8,100000.0,12500.0,8,0.0,25.0,0,5,41.1,53.6,62.5
-1234567897,Dr. Thomas Brown,Gastroenterology,PA,5,4250.0,850.0,5,0.0,20.0,0,0,26.1,26.1,0.0
+1234567892,Dr. Patricia Moore,Orthopedic Surgery,CA,8,100000.0,12500.0,8,0.0,25.0,0,5,40.0,54.0,62.5
+1234567891,Dr. Michael Chen,Family Practice,FL,10,282.0,28.2,10,0.0,30.0,0,5,32.4,52.0,50.0
+1234567890,Dr. Sarah Johnson,Internal Medicine,TX,31,4121.0,132.94,26,73.3,32.3,5,10,31.4,95.3,32.3
+1234567897,Dr. Thomas Brown,Gastroenterology,PA,5,4250.0,850.0,5,0.0,20.0,0,0,24.6,24.6,0.0

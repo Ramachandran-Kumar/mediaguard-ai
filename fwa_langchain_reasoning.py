@@ -346,25 +346,63 @@ class GroqClient:
     def call(self, system: str, user: str) -> str:
         # temperature=0.1 keeps responses deterministic and consistent.
         # Higher values make the LLM more creative but less reliable for JSON output.
-        try:
-            from groq import Groq
-            client = Groq(api_key=self.api_key)
-            response = client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": system},  # auditor persona + JSON rules
-                    {"role": "user",   "content": user}     # the individual claim details
-                ],
-                temperature=0.1,   # low = consistent, high = creative but unreliable
-                max_tokens=1024    # enough for a full JSON response + narrative
-            )
-            return response.choices[0].message.content.strip()
-        except ImportError:
-            raise RuntimeError(
-                "groq package not installed. Run: pip install groq"
-            )
-        except Exception as e:
-            raise RuntimeError(f"Groq API error: {e}")
+        #
+        # RETRY LOGIC: Groq free tier has a 100,000 token/day limit.
+        # If we hit the daily limit (HTTP 429), the error message contains the
+        # exact wait time ("Please try again in Xm Ys"). We parse that and sleep,
+        # then retry once. If the limit is truly exhausted for the day, we raise
+        # a clear message so the user knows to wait until tomorrow's reset.
+        import re as _re
+
+        MAX_RETRIES   = 2     # try the API call up to 2 times total
+        BASE_WAIT_SEC = 10    # fallback wait if we can't parse the retry time
+
+        for attempt in range(MAX_RETRIES):
+            try:
+                from groq import Groq
+                client   = Groq(api_key=self.api_key)
+                response = client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {"role": "system", "content": system},  # auditor persona + JSON rules
+                        {"role": "user",   "content": user}     # the individual claim details
+                    ],
+                    temperature=0.1,   # low = consistent, high = creative but unreliable
+                    max_tokens=1024    # enough for a full JSON response + narrative
+                )
+                return response.choices[0].message.content.strip()
+
+            except ImportError:
+                raise RuntimeError("groq package not installed. Run: pip install groq")
+
+            except Exception as e:
+                err_str = str(e)
+
+                # Detect Groq 429 rate-limit — parse the suggested wait time if present
+                if "429" in err_str and attempt < MAX_RETRIES - 1:
+                    # Error message contains "Please try again in Xm Ys" — extract it
+                    match = _re.search(r'in (\d+)m([\d.]+)s', err_str)
+                    if match:
+                        wait_sec = int(match.group(1)) * 60 + float(match.group(2))
+                    else:
+                        wait_sec = BASE_WAIT_SEC
+
+                    # Daily token limit (TPD) cannot be resolved by waiting minutes —
+                    # it resets at midnight UTC. Surface a helpful message and stop.
+                    if "tokens per day" in err_str.lower():
+                        raise RuntimeError(
+                            f"Groq daily token limit (100,000 TPD) reached.\n"
+                            f"  Resets at midnight UTC. Run again tomorrow, or upgrade at console.groq.com.\n"
+                            f"  Claims analyzed so far are saved in output/fwa_ai_report.csv."
+                        )
+
+                    # Per-minute rate limit — wait the suggested time then retry once
+                    print(f"\n      ⏳ Groq rate limit (per-minute). Waiting {wait_sec:.0f}s then retrying...")
+                    time.sleep(wait_sec + 2)   # +2s buffer
+                    continue
+
+                # Any other error — raise immediately with full context
+                raise RuntimeError(f"Groq API error: {e}")
 
 
 
