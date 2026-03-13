@@ -61,7 +61,10 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 INPUT_FILE = "output/ai_review_queue.csv"
 OUTPUT_FILE = "output/fwa_ai_report.csv"
 MAX_CLAIMS_TO_ANALYZE = 20      # Set to 1 for debug run — change back to 20 after fix
-MIN_RISK_SCORE = 70             # Only analyze claims above this threshold
+#MIN_RISK_SCORE = 70             # Only analyze claims above this threshold
+# Queue already pre-filtered by pipeline (score ≥ 70 OR HIGH severity flag).
+# Set to 0 here so all queued claims reach Groq — filtering happened upstream.
+MIN_RISK_SCORE = 0
 
 ENABLE_VECTOR_SEARCH = False    # Set True if ChromaDB installed (pip install chromadb)
 
@@ -117,40 +120,116 @@ class FWAAnalysisResult:
 # PROMPT TEMPLATES
 # ──────────────────────────────────────────────
 
-SYSTEM_PROMPT = """You are a senior US healthcare claims auditor with 15+ years experience in fraud, waste, and abuse (FWA) detection. You have expert knowledge of:
-- CPT procedure codes and their clinical appropriateness
-- ICD-10-CM diagnosis codes and medical necessity criteria
-- CMS coverage policies and OIG compliance guidelines
-- NCCI bundling edits and Medically Unlikely Edits (MUE)
-- Statistical billing pattern analysis
+SYSTEM_PROMPT = """You are a senior US healthcare claims auditor with 15+ years of FWA detection experience.
 
-Your task is to analyze healthcare claims for FWA indicators and provide clinical reasoning.
+YOUR PRIMARY EVIDENCE IS THE RULE ENGINE OUTPUT:
+The claim you will receive has already been processed by an automated rule engine that checked
+OIG compliance rules, NCCI bundling edits, ICD-CPT medical necessity, and statistical benchmarks.
+The rule engine flags listed in the prompt are your starting point — treat them as established
+findings, not suggestions. Your job is to confirm, explain, and score them using clinical reasoning.
 
-CRITICAL: Always respond with ONLY a valid JSON object. No preamble, no explanation outside JSON, no markdown code blocks. The JSON must have exactly these fields:
+PIPELINE PATTERN LABEL — HIGHEST PRIORITY:
+If the prompt contains a line "★ CONFIRMED FRAUD PATTERN: <label>", that label IS the fraud_category
+to use in your response. Do not override it with the rule flag name. The pipeline has already
+resolved the specific pattern — your job is to explain it clinically in the narrative.
+
+FRAUD CATEGORY SELECTION — use in this priority order:
+  1. If "★ CONFIRMED FRAUD PATTERN" is present → use that exact category label
+  2. Otherwise map the rule engine finding:
+       ICD_CPT_MISMATCH fired      → "MEDICALLY_UNNECESSARY"
+       NCCI_UNBUNDLING fired       → "UNBUNDLING"
+       UPCODING_PROXY fired        → "UPCODING"
+       SPECIALTY_MISMATCH fired    → "SPECIALTY_MISMATCH"
+       COST_OUTLIER fired          → "STATISTICAL_OUTLIER"
+       No flags, low risk          → "CLEAN"
+
+RECOMMENDATION THRESHOLDS:
+  risk_score 85–100  → "REFER_TO_SIU"   (clear fraud pattern, multiple rule violations)
+  risk_score 70–84   → "DENY"           (strong rule violation, clinically indefensible)
+  risk_score 40–69   → "REVIEW"         (flagged but needs human review before action)
+  risk_score 0–39    → "APPROVE"        (minor or no flags, clinically plausible)
+
+CLEAN CLAIM GUIDANCE:
+  A routine venipuncture (CPT 36415) ordered during a diabetes follow-up is standard care.
+  A chest X-ray (CPT 71046) for a pneumonia diagnosis is clinically expected.
+  An inpatient hospital visit E&M (CPT 99232) is routine for admitted patients.
+  Do NOT flag these as high-risk unless a confirmed fraud pattern is explicitly stated.
+
+CRITICAL: Respond with ONLY a valid JSON object. No preamble, no markdown, no explanation outside JSON.
 {
-  "plausible": <true or false>,
-  "confidence": <integer 0-100>,
-  "risk_score": <integer 0-100>,
+  "plausible": <true or false — is the claim clinically defensible?>,
+  "confidence": <integer 0-100 — how certain are you of your finding?>,
+  "risk_score": <integer 0-100 — overall FWA risk>,
   "fraud_category": <"CLEAN" | "UPCODING" | "UNBUNDLING" | "PHANTOM_BILLING" | "MEDICALLY_UNNECESSARY" | "DUPLICATE" | "SPECIALTY_MISMATCH" | "STATISTICAL_OUTLIER">,
-  "narrative": <string: 2-3 sentences explaining your finding>,
-  "red_flags": <array of strings, each a specific concern>,
+  "narrative": <string: 2-3 sentences. Name the specific violation. Explain the clinical reason it is or is not fraud.>,
+  "red_flags": <array of strings — each flag names a specific clinical or billing concern>,
   "recommendation": <"APPROVE" | "REVIEW" | "DENY" | "REFER_TO_SIU">
 }"""
 
 
 def build_claim_prompt(claim: ClaimRecord) -> str:
-    """Build the user-turn prompt with all claim details."""
+    """
+    Build the user-turn prompt sent to Groq for each claim.
 
-    # Parse rule flags from JSON
+    DESIGN NOTE — why rule flags come first:
+    LLMs read top-to-bottom and anchor on early information.
+    Putting the rule engine findings at the top means Groq starts
+    from what the automated system already found and explains it
+    clinically, rather than re-deriving the fraud category from scratch.
+
+    DESIGN NOTE — confirmed fraud pattern section:
+    When the pipeline has already identified the specific fraud type
+    (UNBUNDLING, UPCODING, etc.), we surface it as a separate starred
+    section above the rule flags. This prevents Groq from overriding
+    a known UNBUNDLING label with MEDICALLY_UNNECESSARY just because
+    the rule flag text says ICD_CPT_MISMATCH.
+    """
+
+    # Format the rule engine flags into a readable block.
+    # These are the OIG/NCCI violations the automated pipeline detected.
     rule_flags_text = ""
     if claim.rule_flags:
         flags = claim.rule_flags if isinstance(claim.rule_flags, list) else []
         for f in flags:
-            rule_flags_text += f"\n  - [{f.get('severity','?')}] {f.get('rule','?')}: {f.get('detail','')}"
+            rule_flags_text += f"\n  ✦ [{f.get('severity','?')}] {f.get('rule','?')}: {f.get('detail','')}"
 
-    return f"""Analyze this healthcare claim for fraud, waste, or abuse:
+    # Known FWA patterns the pipeline has already confirmed.
+    # For these, Groq must use the exact category — it maps directly to the
+    # fraud_category field in the JSON response.
+    known_fwa_types = {"UPCODING", "UNBUNDLING", "ICD_CPT_MISMATCH",
+                       "MEDICALLY_UNNECESSARY", "SPECIALTY_MISMATCH",
+                       "DUPLICATE", "PHANTOM_BILLING"}
 
-═══ CLAIM DETAILS ═══
+    # Map pipeline labels to the fraud_category values Groq should return.
+    # ICD_CPT_MISMATCH in the pipeline becomes MEDICALLY_UNNECESSARY in output
+    # because that is the correct clinical category name for this violation.
+    category_map = {
+        "ICD_CPT_MISMATCH":      "MEDICALLY_UNNECESSARY",
+        "UNBUNDLING":            "UNBUNDLING",
+        "UPCODING":              "UPCODING",
+        "MEDICALLY_UNNECESSARY": "MEDICALLY_UNNECESSARY",
+        "SPECIALTY_MISMATCH":    "SPECIALTY_MISMATCH",
+        "DUPLICATE":             "DUPLICATE",
+        "PHANTOM_BILLING":       "PHANTOM_BILLING",
+    }
+
+    # Build the confirmed pattern block — only shown when a known fraud type
+    # is present. The ★ star and ALL-CAPS make it visually dominant.
+    confirmed_pattern_block = ""
+    if claim.fraud_label in known_fwa_types:
+        mapped_category = category_map.get(claim.fraud_label, claim.fraud_label)
+        confirmed_pattern_block = (
+            f"\n★ CONFIRMED FRAUD PATTERN: {mapped_category}"
+            f"\n  Use \"{mapped_category}\" as the fraud_category in your JSON response."
+            f"\n  Explain this specific pattern in the narrative field.\n"
+        )
+
+    return f"""Analyze this healthcare claim. The rule engine findings below are your PRIMARY evidence.
+{confirmed_pattern_block}
+═══ RULE ENGINE FINDINGS ({claim.rule_flag_count} violation(s), severity: {claim.rule_flag_severity}) ═══{rule_flags_text if rule_flags_text else chr(10) + "  No rule violations detected"}
+  Composite risk score : {claim.composite_risk_score:.0f}/100
+
+═══ CLAIM ═══
 Claim ID         : {claim.claim_id}
 Date of Service  : {claim.date_of_service}
 Place of Service : {claim.pos_description}
@@ -160,10 +239,10 @@ Age              : {claim.patient_age}
 Gender           : {claim.patient_gender}
 
 ═══ PROVIDER ═══
-NPI              : {claim.provider_npi}
 Name             : {claim.provider_name}
 Specialty        : {claim.provider_specialty}
 State            : {claim.provider_state}
+NPI              : {claim.provider_npi}
 
 ═══ BILLING ═══
 Procedure (CPT)  : {claim.cpt_code} — {claim.cpt_description}
@@ -171,17 +250,12 @@ Diagnosis (ICD)  : {claim.icd_primary} — {claim.icd_description}
 Billed Amount    : ${claim.billed_amount:,.2f}
 Units Billed     : {claim.units}
 
-═══ BENCHMARKS ═══
-Provider bills 99215 (highest E&M): {claim.pct_99215:.0f}% of E&M visits (national avg: ~18%)
-Weekend billing rate: {claim.weekend_billing_rate:.1f}% (national avg: ~15%)
-Provider avg cost vs specialty peers: {claim.provider_vs_specialty_ratio:.2f}x
+═══ PROVIDER BENCHMARKS ═══
+% of E&M visits billed as 99215 (highest complexity): {claim.pct_99215:.0f}%  (national avg: ~18%)
+Weekend billing rate                                 : {claim.weekend_billing_rate:.1f}%  (national avg: ~15%)
+Avg cost vs specialty peers                          : {claim.provider_vs_specialty_ratio:.2f}x
 
-═══ RULE ENGINE FLAGS ({claim.rule_flag_count} violations, severity: {claim.rule_flag_severity}) ═══{rule_flags_text if rule_flags_text else chr(10) + "  None"}
-
-═══ COMPOSITE RISK SCORE ═══
-{claim.composite_risk_score:.0f}/100
-
-Based on your clinical and compliance expertise, provide your FWA assessment as JSON."""
+Now provide your FWA assessment as JSON. Use the rule engine findings above as your primary evidence."""
 
 
 # ──────────────────────────────────────────────
@@ -270,17 +344,19 @@ class GroqClient:
         self.model = model
 
     def call(self, system: str, user: str) -> str:
+        # temperature=0.1 keeps responses deterministic and consistent.
+        # Higher values make the LLM more creative but less reliable for JSON output.
         try:
             from groq import Groq
             client = Groq(api_key=self.api_key)
             response = client.chat.completions.create(
                 model=self.model,
                 messages=[
-                    {"role": "system", "content": system},
-                    {"role": "user", "content": user}
+                    {"role": "system", "content": system},  # auditor persona + JSON rules
+                    {"role": "user",   "content": user}     # the individual claim details
                 ],
-                temperature=0.1,
-                max_tokens=1024
+                temperature=0.1,   # low = consistent, high = creative but unreliable
+                max_tokens=1024    # enough for a full JSON response + narrative
             )
             return response.choices[0].message.content.strip()
         except ImportError:
@@ -440,9 +516,18 @@ class FWAReasoningEngine:
         self.results: list[FWAAnalysisResult] = []
 
     def _parse_llm_response(self, raw: str, claim_id: str) -> dict:
-        """Safely parse LLM JSON response with fallbacks."""
-        # Strip markdown fences if present
+        """
+        Safely parse the JSON that Groq returns.
+
+        Groq is instructed to return pure JSON, but occasionally wraps it in
+        markdown code fences (```json ... ```). This method strips those first,
+        then parses. If parsing still fails, a regex fallback tries to extract
+        any JSON object from the response. If that also fails, we return safe
+        defaults so the batch doesn't crash on one bad response.
+        """
         clean = raw.strip()
+
+        # Strip markdown fences — Groq sometimes adds these despite instructions
         if clean.startswith("```"):
             lines = clean.split("\n")
             clean = "\n".join(lines[1:-1] if lines[-1] == "```" else lines[1:])
@@ -450,7 +535,7 @@ class FWAReasoningEngine:
         try:
             return json.loads(clean)
         except json.JSONDecodeError:
-            # Try to extract JSON from response
+            # Fallback: extract the first {...} block found anywhere in the response
             import re
             match = re.search(r'\{.*\}', clean, re.DOTALL)
             if match:
@@ -459,23 +544,34 @@ class FWAReasoningEngine:
                 except Exception:
                     pass
 
-            # Return default if all parsing fails
+            # If all parsing fails, return safe defaults — batch continues
             print(f"      ⚠ JSON parse failed for {claim_id}. Using defaults.")
             return {
-                "plausible": True,
-                "confidence": 0,
-                "risk_score": 50,
+                "plausible":      True,
+                "confidence":     0,
+                "risk_score":     50,
                 "fraud_category": "REVIEW_NEEDED",
-                "narrative": f"LLM response could not be parsed. Raw: {raw[:200]}",
-                "red_flags": ["Parse error — manual review recommended"],
+                "narrative":      f"LLM response could not be parsed. Raw: {raw[:200]}",
+                "red_flags":      ["Parse error — manual review recommended"],
                 "recommendation": "REVIEW"
             }
 
     def analyze_claim(self, claim: ClaimRecord) -> FWAAnalysisResult:
-        """Run a single claim through the LLM reasoning pipeline."""
+        """
+        Run one claim through the full LLM reasoning pipeline.
+
+        Flow:
+          1. Optionally enrich prompt with similar past cases from ChromaDB (Month 2)
+          2. Build the structured claim prompt (rule flags first, then clinical details)
+          3. Send to Groq via GroqClient.call()
+          4. Parse the JSON response
+          5. Return a FWAAnalysisResult dataclass
+        """
         start = time.time()
 
-        # Optionally enrich prompt with similar past cases
+        # Step 1: Vector store similarity search (optional — requires ChromaDB)
+        # Finds past confirmed FWA cases that resemble this claim.
+        # Disabled by default (ENABLE_VECTOR_SEARCH = False) — Month 2 feature.
         similar_context = ""
         if self.vector_store:
             claim_text = f"{claim.cpt_description} {claim.icd_description} {claim.provider_specialty}"
@@ -485,40 +581,49 @@ class FWAReasoningEngine:
                 for s in similar:
                     similar_context += f"[{s['category']}] {s['case']}\n"
 
+        # Step 2: Build prompt — rule flags appear first so Groq anchors to them
         user_prompt = build_claim_prompt(claim)
         if similar_context:
-            user_prompt += similar_context
+            user_prompt += similar_context  # append past cases at the end if available
 
+        # Step 3 & 4: Send to LLM and parse response
         try:
             raw_response = self.llm.call(SYSTEM_PROMPT, user_prompt)
-            parsed = self._parse_llm_response(raw_response, claim.claim_id)
+            parsed       = self._parse_llm_response(raw_response, claim.claim_id)
 
             result = FWAAnalysisResult(
-                claim_id=claim.claim_id,
-                risk_score=parsed.get("risk_score", 50),
-                fraud_category=parsed.get("fraud_category", "UNKNOWN"),
-                plausible=parsed.get("plausible", True),
-                confidence=parsed.get("confidence", 0),
-                narrative=parsed.get("narrative", ""),
-                red_flags=parsed.get("red_flags", []),
-                recommendation=parsed.get("recommendation", "REVIEW"),
-                llm_provider=LLM_PROVIDER,
-                analysis_time_sec=round(time.time() - start, 2),
-                raw_response=raw_response
+                claim_id           = claim.claim_id,
+                risk_score         = parsed.get("risk_score",     50),
+                fraud_category     = parsed.get("fraud_category", "UNKNOWN"),
+                plausible          = parsed.get("plausible",      True),
+                confidence         = parsed.get("confidence",     0),
+                narrative          = parsed.get("narrative",      ""),
+                red_flags          = parsed.get("red_flags",      []),
+                recommendation     = parsed.get("recommendation", "REVIEW"),
+                llm_provider       = LLM_PROVIDER,
+                analysis_time_sec  = round(time.time() - start, 2),
+                raw_response       = raw_response
             )
         except Exception as e:
+            # Don't crash the whole batch — log the error and continue
             result = FWAAnalysisResult(
-                claim_id=claim.claim_id,
-                error=str(e),
-                narrative=f"Analysis failed: {str(e)}",
-                recommendation="REVIEW",
-                analysis_time_sec=round(time.time() - start, 2)
+                claim_id          = claim.claim_id,
+                error             = str(e),
+                narrative         = f"Analysis failed: {str(e)}",
+                recommendation    = "REVIEW",
+                analysis_time_sec = round(time.time() - start, 2)
             )
 
         return result
 
     def run_batch(self, claims: list[ClaimRecord]) -> list[FWAAnalysisResult]:
-        """Process a batch of claims through the reasoning engine."""
+        """
+        Process a full batch of claims through the reasoning engine.
+
+        Each claim is analyzed independently — Groq has no memory between calls.
+        All claim context (rule flags, clinical data, benchmarks) must be in the
+        prompt itself, which is why build_claim_prompt() is thorough.
+        """
         print(f"\n  Processing {len(claims)} claims through {LLM_PROVIDER.upper()} LLM...")
         print("  " + "─" * 50)
 
@@ -533,11 +638,12 @@ class FWAReasoningEngine:
             if result.error:
                 print(f"ERROR: {result.error}")
             else:
+                # 🔴 = high risk (≥80), 🟡 = medium (≥60), 🟢 = low (<60)
                 icon = "🔴" if result.risk_score >= 80 else "🟡" if result.risk_score >= 60 else "🟢"
                 print(f"{icon} {result.fraud_category} | Risk: {result.risk_score}/100 | "
                       f"→ {result.recommendation} ({result.analysis_time_sec}s)")
 
-            # Rate limiting for API providers
+            # Rate limiting — Claude API has stricter limits than Groq
             if LLM_PROVIDER == "claude" and i < len(claims):
                 time.sleep(0.5)
 
@@ -645,7 +751,11 @@ def load_claims_for_ai(filepath: str, max_claims: int, min_risk: float) -> tuple
     print(f"  Loaded {len(df)} claims from pipeline output")
 
     # Filter to high-risk claims
-    df_filtered = df[df["composite_risk_score"] >= min_risk].head(max_claims)
+    #df_filtered = df[df["composite_risk_score"] >= min_risk].head(max_claims)
+    # Accept all claims the pipeline queued — they were already filtered by
+    # score ≥ 70 OR HIGH severity rule flag. No second filter needed here.
+    df_filtered = df[df["composite_risk_score"] >= min_risk].head(max_claims) \
+              if min_risk > 0 else df.head(max_claims)
     print(f"  Filtered to {len(df_filtered)} claims (risk ≥ {min_risk}, max {max_claims})")
 
     claims = []

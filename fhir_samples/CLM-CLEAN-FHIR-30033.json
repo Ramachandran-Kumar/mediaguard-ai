@@ -1,0 +1,148 @@
+{
+  "resourceType": "ExplanationOfBenefit",
+  "id": "CLM-CLEAN-FHIR-30033",
+  "meta": {
+    "lastUpdated": "2026-03-13T21:08:12Z",
+    "profile": [
+      "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
+    ]
+  },
+  "identifier": [
+    {
+      "system": "https://www.cms.gov/mediaguard/claim-id",
+      "value": "CLM-CLEAN-FHIR-30033"
+    },
+    {
+      "system": "https://www.cms.gov/mediaguard/member-id",
+      "value": "MBR271779360"
+    }
+  ],
+  "status": "active",
+  "type": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/claim-type",
+        "code": "professional",
+        "display": "Professional"
+      }
+    ]
+  },
+  "use": "claim",
+  "patient": {
+    "reference": "Patient/PAT-92240"
+  },
+  "billablePeriod": {
+    "start": "2024-02-02",
+    "end": "2024-02-02"
+  },
+  "created": "2026-03-13T21:08:12Z",
+  "insurer": {
+    "identifier": {
+      "system": "https://www.cms.gov/mediaguard/payer-id",
+      "value": "PAYER004"
+    },
+    "display": "Humana"
+  },
+  "provider": {
+    "identifier": {
+      "system": "http://hl7.org/fhir/sid/us-npi",
+      "value": "1234567897"
+    },
+    "display": "Dr. Thomas Brown"
+  },
+  "outcome": "complete",
+  "diagnosis": [
+    {
+      "sequence": 1,
+      "diagnosisCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/sid/icd-10-cm",
+            "code": "Z12.11",
+            "display": "Colorectal cancer screening"
+          }
+        ]
+      },
+      "type": [
+        {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/ex-diagnosistype",
+              "code": "principal",
+              "display": "Principal Diagnosis"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "item": [
+    {
+      "sequence": 1,
+      "productOrService": {
+        "coding": [
+          {
+            "system": "http://www.ama-assn.org/go/cpt",
+            "code": "45378",
+            "display": "Colonoscopy, diagnostic"
+          }
+        ]
+      },
+      "location": {
+        "locationCodeableConcept": {
+          "coding": [
+            {
+              "system": "https://www.cms.gov/Medicare/Coding/place-of-service-codes",
+              "code": "22",
+              "display": "Outpatient Hospital"
+            }
+          ]
+        }
+      },
+      "servicedDate": "2024-02-02",
+      "unitPrice": {
+        "value": 850.0,
+        "currency": "USD"
+      },
+      "net": {
+        "value": 850.0,
+        "currency": "USD"
+      }
+    }
+  ],
+  "total": [
+    {
+      "category": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/adjudication",
+            "code": "submitted",
+            "display": "Submitted Amount"
+          }
+        ]
+      },
+      "amount": {
+        "value": 850.0,
+        "currency": "USD"
+      }
+    }
+  ],
+  "extension": [
+    {
+      "url": "https://mediaguard.ai/fhir/extension/provider-specialty",
+      "valueString": "Gastroenterology"
+    },
+    {
+      "url": "https://mediaguard.ai/fhir/extension/provider-state",
+      "valueString": "PA"
+    },
+    {
+      "url": "https://mediaguard.ai/fhir/extension/plan-name",
+      "valueString": "Medicare Advantage PPO"
+    },
+    {
+      "url": "https://mediaguard.ai/fhir/extension/cpt-expected-specialty",
+      "valueString": "Gastroenterology"
+    }
+  ]
+}
