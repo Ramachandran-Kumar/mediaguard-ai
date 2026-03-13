@@ -37,6 +37,14 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 RANDOM_SEED = 42
 np.random.seed(RANDOM_SEED)
 
+# ── DATA SOURCE SWITCH ──────────────────────────
+# Set to "fhir" to use FHIR-converted claims
+# Set to "synthetic" to use original generated data (default)
+# DATA_SOURCE = "synthetic"
+DATA_SOURCE = "fhir"
+
+FHIR_CLAIMS_PATH = os.path.join(OUTPUT_DIR, "fhir_converted_claims.csv")
+
 # ──────────────────────────────────────────────
 # REFERENCE DATA — CPT / ICD / NCCI
 # ──────────────────────────────────────────────
@@ -364,12 +372,22 @@ def normalize_and_enrich(df: pd.DataFrame) -> pd.DataFrame:
     df["cost_ratio_vs_benchmark"] = (df["billed_amount"] / df["cpt_benchmark_cost"]).round(3)
 
     # Feature: CPT specialty mismatch
-    df["specialty_mismatch"] = df.apply(
-        lambda r: 0 if (
-            r["cpt_code"] in CPT_REFERENCE and
-            r["provider_specialty"] in CPT_REFERENCE.get(r["cpt_code"], {}).get("specialty", [])
-        ) else 1, axis=1
-    )
+    # FHIR mode: cpt_expected_specialty travels from the scenario through
+    # the FHIR EOB extension → converter → CSV. We compare directly against
+    # provider_specialty — no hardcoded CPT dict needed, scales to any CPT code.
+    # Synthetic mode: falls back to CPT_REFERENCE (no FHIR context available).
+    if "cpt_expected_specialty" in df.columns and df["cpt_expected_specialty"].notna().any():
+        df["specialty_mismatch"] = (
+            df["provider_specialty"].str.strip() != df["cpt_expected_specialty"].str.strip()
+        ).astype(int)
+    else:
+        # Fallback for synthetic data — CPT_REFERENCE is the only source of truth
+        df["specialty_mismatch"] = df.apply(
+            lambda r: 0 if (
+                r["cpt_code"] in CPT_REFERENCE and
+                r["provider_specialty"] in CPT_REFERENCE.get(r["cpt_code"], {}).get("specialty", [])
+            ) else 1, axis=1
+        )
 
     # Feature: Provider-level claim frequency
     provider_freq = df.groupby("provider_npi").size().reset_index(name="provider_claim_count")
@@ -719,8 +737,17 @@ def save_outputs(df: pd.DataFrame, provider_df: pd.DataFrame):
     provider_df.to_csv(prov_path, index=False)
     print(f"    ✓ provider_benchmarks.csv ({len(provider_df)} providers)")
 
-    # High-priority claims for AI review (risk > 70)
-    ai_queue = df[df["composite_risk_score"] >= 70].sort_values("composite_risk_score", ascending=False)
+    # AI review queue — two entry criteria so no real FWA claim is missed:
+    # 1. Composite risk score ≥ 70 (high confidence from multiple signals)
+    # 2. Any claim with a HIGH severity rule flag regardless of score — a single
+    #    HIGH flag (e.g. ICD_CPT_MISMATCH, NCCI_UNBUNDLING) is clinically serious
+    #    even if the composite score is pulled down by a small dataset.
+    high_score = df["composite_risk_score"] >= 70
+    high_sev   = df["rule_flag_severity"] == "HIGH"
+    ai_queue   = df[high_score | high_sev].sort_values("composite_risk_score", ascending=False)
+    # Drop the synthetic -B expansion rows from the queue — they exist only to
+    # trigger the NCCI rule. The parent claim carries the full clinical context.
+    ai_queue   = ai_queue[~ai_queue["claim_id"].str.endswith("-B")]
     ai_queue_cols = [
         "claim_id", "patient_id", "patient_age", "patient_gender",
         "provider_npi", "provider_name", "provider_specialty", "provider_state",
@@ -732,7 +759,7 @@ def save_outputs(df: pd.DataFrame, provider_df: pd.DataFrame):
         "fraud_label"
     ]
     ai_queue = ai_queue[[c for c in ai_queue_cols if c in ai_queue.columns]]
-    ai_path = os.path.join(OUTPUT_DIR, "ai_review_queue.csv")
+    ai_path  = os.path.join(OUTPUT_DIR, "ai_review_queue.csv")
     ai_queue.to_csv(ai_path, index=False)
     print(f"    ✓ ai_review_queue.csv ({len(ai_queue)} high-priority claims → feed to LangChain layer)")
 
@@ -786,7 +813,58 @@ if __name__ == "__main__":
     print("╚══════════════════════════════════════════╝")
 
     # Layer 1: Generate / Load data
-    df = generate_synthetic_claims(n_claims=500, inject_fraud=True)
+    if DATA_SOURCE == "fhir" and os.path.exists(FHIR_CLAIMS_PATH):
+        print(f"\n  [SOURCE] FHIR mode — loading {FHIR_CLAIMS_PATH}")
+        df = pd.read_csv(FHIR_CLAIMS_PATH)
+        print(f"    ✓ Loaded {len(df)} FHIR-converted claims")
+
+        # Only two renames needed — all other FHIR column names already match pipeline.
+        df = df.rename(columns={
+            "icd_code":     "icd_primary",
+            "service_date": "date_of_service",
+        })
+
+        # Fraud label — present in synthetic FHIR data for evaluation.
+        # Real CMS BCDA claims won't have fraud_type; defaults to CLEAN.
+        df["fraud_label"] = df["fraud_type"].fillna("CLEAN").replace("NONE", "CLEAN") \
+                            if "fraud_type" in df.columns else "CLEAN"
+
+        # NCCI unbundling expansion — convert additional_cpt column into a second row.
+        # PROBLEM: FHIR EOB stores unbundled pairs as two items inside one resource.
+        # The converter puts the second CPT in additional_cpt — one row in the CSV.
+        # The NCCI rule groups by patient+provider+DOS looking for BOTH codes as
+        # separate rows. It never sees additional_cpt, so 0 unbundling detections.
+        # FIX: Expand each additional_cpt into its own row with the same claim context,
+        # making the pair visible to the rule engine exactly as two separate claims.
+        # strip() removes the float decimal artifact (36416.0 → 36416) from CSV read.
+        df["additional_cpt"] = df["additional_cpt"].fillna("").astype(str)
+        unbundled_rows = []
+        for _, row in df[df["additional_cpt"] != ""].iterrows():
+            new_row                    = row.copy()
+            new_row["claim_id"]        = row["claim_id"] + "-B"
+            new_row["cpt_code"]        = row["additional_cpt"].split(";")[0].split(".")[0].strip()
+            new_row["cpt_description"] = "Bundled code (NCCI expansion)"
+            new_row["additional_cpt"]  = ""
+            # Carry the parent fraud_label so evaluation metrics stay correct
+            new_row["fraud_label"]     = row.get("fraud_label", "CLEAN")
+            unbundled_rows.append(new_row)
+        if unbundled_rows:
+            df = pd.concat([df, pd.DataFrame(unbundled_rows)], ignore_index=True)
+            print(f"    ✓ Expanded {len(unbundled_rows)} additional_cpt rows for NCCI detection")
+
+        # Columns not present in FHIR EOB standard — patient demographics live in
+        # a separate Patient resource. Defaulted here; Month 2 will fetch them.
+        if "patient_age"    not in df.columns: df["patient_age"]    = 65
+        if "patient_gender" not in df.columns: df["patient_gender"] = "U"
+        if "units"          not in df.columns: df["units"]          = 1
+    elif DATA_SOURCE == "fhir" and not os.path.exists(FHIR_CLAIMS_PATH):
+        print(f"\n  ⚠️  FHIR mode selected but {FHIR_CLAIMS_PATH} not found.")
+        print(f"      Run fhir_sample_generator.py then fhir_converter.py first.")
+        print(f"      Falling back to synthetic data...\n")
+        df = generate_synthetic_claims(n_claims=500, inject_fraud=True)
+    else:
+        print(f"\n  [SOURCE] Synthetic mode — generating claims...")
+        df = generate_synthetic_claims(n_claims=500, inject_fraud=True)
 
     # Layer 2: Normalize + feature engineering
     df = normalize_and_enrich(df)

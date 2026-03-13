@@ -1,0 +1,51 @@
+claim_id,patient_id,provider,specialty,state,payer,cpt_code,cpt_desc,icd_code,icd_desc,amount,pos_code,pos_desc,service_date,fraud_type,is_fraud
+CLM-CLEAN-FHIR-93810,PAT-24592,Dr. Patricia Moore,Orthopedic Surgery,CA,UnitedHealthcare,27447,Total knee replacement arthroplasty,M17.11,"Primary osteoarthritis, right knee",12500.0,21,Inpatient Hospital,2024-04-24,NONE,NO
+CLM-CLEAN-FHIR-23434,PAT-98696,Dr. Thomas Brown,Gastroenterology,PA,BlueCross BlueShield,45378,"Colonoscopy, diagnostic",Z12.11,Colorectal cancer screening,850.0,22,Outpatient Hospital,2024-08-04,NONE,NO
+CLM-CLEAN-FHIR-13905,PAT-22280,Dr. Sarah Johnson,Internal Medicine,TX,Aetna,99215,"Office visit, high complexity",C34.11,Malignant neoplasm upper lobe lung,225.0,11,Office,2024-11-04,NONE,NO
+CLM-CLEAN-FHIR-83563,PAT-36062,Dr. Patricia Moore,Orthopedic Surgery,CA,Humana,27447,Total knee replacement arthroplasty,M17.11,"Primary osteoarthritis, right knee",12500.0,21,Inpatient Hospital,2024-08-17,NONE,NO
+CLM-CLEAN-FHIR-10851,PAT-30926,Dr. Michael Chen,Family Practice,FL,Humana,36415,Venipuncture for blood collection,E11.9,Type 2 diabetes mellitus,18.0,11,Office,2024-05-22,NONE,NO
+CLM-CLEAN-FHIR-38221,PAT-54118,Dr. Sarah Johnson,Internal Medicine,TX,BlueCross BlueShield,80053,Comprehensive metabolic panel,E11.9,Type 2 diabetes mellitus,38.0,11,Office,2024-02-19,NONE,NO
+CLM-CLEAN-FHIR-55082,PAT-89131,Dr. Sarah Johnson,Internal Medicine,TX,BlueCross BlueShield,71046,"Chest X-ray, 2 views",J18.9,"Pneumonia, unspecified",95.0,22,Outpatient Hospital,2024-10-01,NONE,NO
+CLM-CLEAN-FHIR-59615,PAT-20328,Dr. Thomas Brown,Gastroenterology,PA,UnitedHealthcare,45378,"Colonoscopy, diagnostic",Z12.11,Colorectal cancer screening,850.0,22,Outpatient Hospital,2024-07-04,NONE,NO
+CLM-CLEAN-FHIR-19116,PAT-16006,Dr. Sarah Johnson,Internal Medicine,TX,Aetna,99232,"Inpatient hospital care, subsequent",N39.0,Urinary tract infection,210.0,21,Inpatient Hospital,2024-02-10,NONE,NO
+CLM-CLEAN-FHIR-23238,PAT-59823,Dr. Michael Chen,Family Practice,FL,Humana,36415,Venipuncture for blood collection,E11.9,Type 2 diabetes mellitus,18.0,11,Office,2024-03-24,NONE,NO
+CLM-CLEAN-FHIR-56566,PAT-37460,Dr. Sarah Johnson,Internal Medicine,TX,UnitedHealthcare,99214,"Office visit, moderate complexity",I10,Essential hypertension,165.0,11,Office,2024-11-07,NONE,NO
+CLM-CLEAN-FHIR-80010,PAT-42087,Dr. Sarah Johnson,Internal Medicine,TX,Humana,80053,Comprehensive metabolic panel,E11.9,Type 2 diabetes mellitus,38.0,11,Office,2024-05-18,NONE,NO
+CLM-CLEAN-FHIR-99733,PAT-52504,Dr. Patricia Moore,Orthopedic Surgery,CA,BlueCross BlueShield,27447,Total knee replacement arthroplasty,M17.11,"Primary osteoarthritis, right knee",12500.0,21,Inpatient Hospital,2024-01-17,NONE,NO
+CLM-CLEAN-FHIR-62581,PAT-45093,Dr. Thomas Brown,Gastroenterology,PA,Aetna,45378,"Colonoscopy, diagnostic",Z12.11,Colorectal cancer screening,850.0,22,Outpatient Hospital,2024-06-10,NONE,NO
+CLM-CLEAN-FHIR-95909,PAT-75435,Dr. James Williams,Cardiology,NY,Humana,93000,Electrocardiogram (ECG) with interpretation,I25.10,Atherosclerotic heart disease,85.0,11,Office,2024-05-15,NONE,NO
+CLM-CLEAN-FHIR-42325,PAT-83579,Dr. Thomas Brown,Gastroenterology,PA,UnitedHealthcare,45378,"Colonoscopy, diagnostic",Z12.11,Colorectal cancer screening,850.0,22,Outpatient Hospital,2024-08-07,NONE,NO
+CLM-CLEAN-FHIR-57447,PAT-38746,Dr. Sarah Johnson,Internal Medicine,TX,Humana,99214,"Office visit, moderate complexity",I10,Essential hypertension,165.0,11,Office,2024-01-25,NONE,NO
+CLM-CLEAN-FHIR-30033,PAT-92240,Dr. Thomas Brown,Gastroenterology,PA,Humana,45378,"Colonoscopy, diagnostic",Z12.11,Colorectal cancer screening,850.0,22,Outpatient Hospital,2024-02-02,NONE,NO
+CLM-CLEAN-FHIR-60019,PAT-88104,Dr. Sarah Johnson,Internal Medicine,TX,UnitedHealthcare,99215,"Office visit, high complexity",C34.11,Malignant neoplasm upper lobe lung,225.0,11,Office,2024-01-06,NONE,NO
+CLM-CLEAN-FHIR-99353,PAT-80381,Dr. Michael Chen,Family Practice,FL,UnitedHealthcare,36415,Venipuncture for blood collection,E11.9,Type 2 diabetes mellitus,18.0,11,Office,2024-02-27,NONE,NO
+CLM-CLEAN-FHIR-66985,PAT-30730,Dr. Sarah Johnson,Internal Medicine,TX,BlueCross BlueShield,99232,"Inpatient hospital care, subsequent",N39.0,Urinary tract infection,210.0,21,Inpatient Hospital,2024-09-13,NONE,NO
+CLM-CLEAN-FHIR-76542,PAT-23947,Dr. Sarah Johnson,Internal Medicine,TX,UnitedHealthcare,99215,"Office visit, high complexity",C34.11,Malignant neoplasm upper lobe lung,225.0,11,Office,2024-11-07,NONE,NO
+CLM-CLEAN-FHIR-30032,PAT-59009,Dr. Sarah Johnson,Internal Medicine,TX,Aetna,99215,"Office visit, high complexity",C34.11,Malignant neoplasm upper lobe lung,225.0,11,Office,2024-09-28,NONE,NO
+CLM-CLEAN-FHIR-88504,PAT-52487,Dr. Sarah Johnson,Internal Medicine,TX,BlueCross BlueShield,99214,"Office visit, moderate complexity",I10,Essential hypertension,165.0,11,Office,2024-07-04,NONE,NO
+CLM-CLEAN-FHIR-41385,PAT-17592,Dr. Sarah Johnson,Internal Medicine,TX,BlueCross BlueShield,99214,"Office visit, moderate complexity",I10,Essential hypertension,165.0,11,Office,2024-09-05,NONE,NO
+CLM-CLEAN-FHIR-79822,PAT-26483,Dr. Sarah Johnson,Internal Medicine,TX,Humana,99215,"Office visit, high complexity",C34.11,Malignant neoplasm upper lobe lung,225.0,11,Office,2024-03-25,NONE,NO
+CLM-CLEAN-FHIR-79163,PAT-89507,Dr. Sarah Johnson,Internal Medicine,TX,Aetna,99215,"Office visit, high complexity",C34.11,Malignant neoplasm upper lobe lung,225.0,11,Office,2024-12-19,NONE,NO
+CLM-CLEAN-FHIR-50857,PAT-62296,Dr. Sarah Johnson,Internal Medicine,TX,UnitedHealthcare,71046,"Chest X-ray, 2 views",J18.9,"Pneumonia, unspecified",95.0,22,Outpatient Hospital,2024-09-21,NONE,NO
+CLM-CLEAN-FHIR-25860,PAT-42493,Dr. Michael Chen,Family Practice,FL,BlueCross BlueShield,36415,Venipuncture for blood collection,E11.9,Type 2 diabetes mellitus,18.0,11,Office,2024-01-11,NONE,NO
+CLM-CLEAN-FHIR-87128,PAT-38864,Dr. Michael Chen,Family Practice,FL,BlueCross BlueShield,99213,"Office visit, low-moderate complexity",J06.9,Acute upper respiratory infection,120.0,11,Office,2024-04-27,NONE,NO
+CLM-FWA-FHIR-14117,PAT-53309,Dr. Sarah Johnson,Internal Medicine,TX,Aetna,99215,"Office visit, high complexity (UPCODED)",J06.9,Acute upper respiratory infection,225.0,11,Office,2024-05-22,UPCODING,YES
+CLM-FWA-FHIR-38080,PAT-80678,Dr. Sarah Johnson,Internal Medicine,TX,Humana,99215,"Office visit, high complexity (UPCODED)",J06.9,Acute upper respiratory infection,225.0,11,Office,2024-05-04,UPCODING,YES
+CLM-FWA-FHIR-63354,PAT-34957,Dr. Sarah Johnson,Internal Medicine,TX,BlueCross BlueShield,99215,"Office visit, high complexity (UPCODED)",J06.9,Acute upper respiratory infection,225.0,11,Office,2024-12-03,UPCODING,YES
+CLM-FWA-FHIR-56438,PAT-65519,Dr. Sarah Johnson,Internal Medicine,TX,Humana,99215,"Office visit, high complexity (UPCODED)",J06.9,Acute upper respiratory infection,225.0,11,Office,2024-01-28,UPCODING,YES
+CLM-FWA-FHIR-17944,PAT-62772,Dr. Sarah Johnson,Internal Medicine,TX,UnitedHealthcare,99215,"Office visit, high complexity (UPCODED)",J06.9,Acute upper respiratory infection,225.0,11,Office,2024-02-25,UPCODING,YES
+CLM-FWA-FHIR-35112,PAT-34931,Dr. Sarah Johnson,Internal Medicine,TX,Humana,36415,Venipuncture (should not appear with 36416),E11.9,Type 2 diabetes mellitus,18.0,11,Office,2024-03-12,UNBUNDLING,YES
+CLM-FWA-FHIR-34050,PAT-46509,Dr. Sarah Johnson,Internal Medicine,TX,Aetna,36415,Venipuncture (should not appear with 36416),E11.9,Type 2 diabetes mellitus,18.0,11,Office,2024-02-08,UNBUNDLING,YES
+CLM-FWA-FHIR-82132,PAT-22833,Dr. Sarah Johnson,Internal Medicine,TX,BlueCross BlueShield,36415,Venipuncture (should not appear with 36416),E11.9,Type 2 diabetes mellitus,18.0,11,Office,2024-02-17,UNBUNDLING,YES
+CLM-FWA-FHIR-31798,PAT-63269,Dr. Sarah Johnson,Internal Medicine,TX,Humana,36415,Venipuncture (should not appear with 36416),E11.9,Type 2 diabetes mellitus,18.0,11,Office,2024-04-19,UNBUNDLING,YES
+CLM-FWA-FHIR-17685,PAT-31579,Dr. Sarah Johnson,Internal Medicine,TX,BlueCross BlueShield,36415,Venipuncture (should not appear with 36416),E11.9,Type 2 diabetes mellitus,18.0,11,Office,2024-07-18,UNBUNDLING,YES
+CLM-FWA-FHIR-69638,PAT-47388,Dr. Patricia Moore,Orthopedic Surgery,CA,Humana,27447,Total knee replacement,M25.361,Stiffness of right hip (wrong body part),12500.0,21,Inpatient Hospital,2024-03-20,ICD_CPT_MISMATCH,YES
+CLM-FWA-FHIR-48890,PAT-38534,Dr. Patricia Moore,Orthopedic Surgery,CA,BlueCross BlueShield,27447,Total knee replacement,M25.361,Stiffness of right hip (wrong body part),12500.0,21,Inpatient Hospital,2024-06-09,ICD_CPT_MISMATCH,YES
+CLM-FWA-FHIR-16572,PAT-86569,Dr. Patricia Moore,Orthopedic Surgery,CA,Aetna,27447,Total knee replacement,M25.361,Stiffness of right hip (wrong body part),12500.0,21,Inpatient Hospital,2024-01-30,ICD_CPT_MISMATCH,YES
+CLM-FWA-FHIR-34356,PAT-18981,Dr. Patricia Moore,Orthopedic Surgery,CA,BlueCross BlueShield,27447,Total knee replacement,M25.361,Stiffness of right hip (wrong body part),12500.0,21,Inpatient Hospital,2024-12-11,ICD_CPT_MISMATCH,YES
+CLM-FWA-FHIR-62923,PAT-25713,Dr. Patricia Moore,Orthopedic Surgery,CA,Aetna,27447,Total knee replacement,M25.361,Stiffness of right hip (wrong body part),12500.0,21,Inpatient Hospital,2024-10-23,ICD_CPT_MISMATCH,YES
+CLM-FWA-FHIR-91183,PAT-20745,Dr. Michael Chen,Family Practice,FL,UnitedHealthcare,36415,Venipuncture for blood collection,Z00.00,General adult medical exam,18.0,11,Office,2024-05-13,MEDICALLY_UNNECESSARY,YES
+CLM-FWA-FHIR-97782,PAT-51180,Dr. Michael Chen,Family Practice,FL,UnitedHealthcare,36415,Venipuncture for blood collection,Z00.00,General adult medical exam,18.0,11,Office,2024-07-21,MEDICALLY_UNNECESSARY,YES
+CLM-FWA-FHIR-98039,PAT-94607,Dr. Michael Chen,Family Practice,FL,Humana,36415,Venipuncture for blood collection,Z00.00,General adult medical exam,18.0,11,Office,2024-06-10,MEDICALLY_UNNECESSARY,YES
+CLM-FWA-FHIR-11220,PAT-70068,Dr. Michael Chen,Family Practice,FL,BlueCross BlueShield,36415,Venipuncture for blood collection,Z00.00,General adult medical exam,18.0,11,Office,2024-02-07,MEDICALLY_UNNECESSARY,YES
+CLM-FWA-FHIR-76307,PAT-44760,Dr. Michael Chen,Family Practice,FL,UnitedHealthcare,36415,Venipuncture for blood collection,Z00.00,General adult medical exam,18.0,11,Office,2024-02-05,MEDICALLY_UNNECESSARY,YES

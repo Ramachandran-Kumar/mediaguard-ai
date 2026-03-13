@@ -1,0 +1,152 @@
+{
+  "resourceType": "ExplanationOfBenefit",
+  "id": "CLM-FWA-FHIR-77391",
+  "meta": {
+    "lastUpdated": "2026-03-13T20:48:45Z",
+    "profile": [
+      "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
+    ]
+  },
+  "identifier": [
+    {
+      "system": "https://www.cms.gov/mediaguard/claim-id",
+      "value": "CLM-FWA-FHIR-77391"
+    },
+    {
+      "system": "https://www.cms.gov/mediaguard/member-id",
+      "value": "MBR399012686"
+    }
+  ],
+  "status": "active",
+  "type": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/claim-type",
+        "code": "professional",
+        "display": "Professional"
+      }
+    ]
+  },
+  "use": "claim",
+  "patient": {
+    "reference": "Patient/PAT-41195"
+  },
+  "billablePeriod": {
+    "start": "2024-10-03",
+    "end": "2024-10-03"
+  },
+  "created": "2026-03-13T20:48:45Z",
+  "insurer": {
+    "identifier": {
+      "system": "https://www.cms.gov/mediaguard/payer-id",
+      "value": "PAYER002"
+    },
+    "display": "Aetna"
+  },
+  "provider": {
+    "identifier": {
+      "system": "http://hl7.org/fhir/sid/us-npi",
+      "value": "1234567897"
+    },
+    "display": "Dr. Thomas Brown"
+  },
+  "outcome": "complete",
+  "diagnosis": [
+    {
+      "sequence": 1,
+      "diagnosisCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/sid/icd-10-cm",
+            "code": "J06.9",
+            "display": "Acute upper respiratory infection"
+          }
+        ]
+      },
+      "type": [
+        {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/ex-diagnosistype",
+              "code": "principal",
+              "display": "Principal Diagnosis"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "item": [
+    {
+      "sequence": 1,
+      "productOrService": {
+        "coding": [
+          {
+            "system": "http://www.ama-assn.org/go/cpt",
+            "code": "99215",
+            "display": "Office visit, high complexity (UPCODED)"
+          }
+        ]
+      },
+      "location": {
+        "locationCodeableConcept": {
+          "coding": [
+            {
+              "system": "https://www.cms.gov/Medicare/Coding/place-of-service-codes",
+              "code": "11",
+              "display": "Office"
+            }
+          ]
+        }
+      },
+      "servicedDate": "2024-10-03",
+      "unitPrice": {
+        "value": 225.0,
+        "currency": "USD"
+      },
+      "net": {
+        "value": 225.0,
+        "currency": "USD"
+      }
+    }
+  ],
+  "total": [
+    {
+      "category": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/adjudication",
+            "code": "submitted",
+            "display": "Submitted Amount"
+          }
+        ]
+      },
+      "amount": {
+        "value": 225.0,
+        "currency": "USD"
+      }
+    }
+  ],
+  "extension": [
+    {
+      "url": "https://mediaguard.ai/fhir/extension/provider-specialty",
+      "valueString": "Gastroenterology"
+    },
+    {
+      "url": "https://mediaguard.ai/fhir/extension/provider-state",
+      "valueString": "PA"
+    },
+    {
+      "url": "https://mediaguard.ai/fhir/extension/plan-name",
+      "valueString": "Medicare Advantage Gold"
+    },
+    {
+      "url": "https://mediaguard.ai/fhir/extension/injected-fraud-type",
+      "valueString": "UPCODING"
+    },
+    {
+      "url": "https://mediaguard.ai/fhir/extension/fraud-note",
+      "valueString": "High complexity visit billed for simple cold \u2014 typical upcoding pattern"
+    }
+  ]
+}
