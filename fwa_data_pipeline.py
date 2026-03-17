@@ -122,25 +122,31 @@ ICD_REFERENCE = {
 
 # NCCI bundling rules: if CPT_A is billed with CPT_B on same day → violation
 # Format: (code_to_keep, code_that_is_bundled_into_it)
-NCCI_BUNDLES = [
-    ("36415", "36416"),   # venipuncture subsumes capillary draw
-    ("45380", "45378"),   # colonoscopy w/ biopsy subsumes diagnostic colonoscopy
-    ("99215", "99211"),   # high complexity subsumes minimal
-    ("99215", "99212"),
-    ("99214", "99212"),
-    ("93306", "93000"),   # echo subsumes EKG in same encounter
-]
+# NCCI_BUNDLES = [
+#     ("36415", "36416"),   # venipuncture subsumes capillary draw
+#     ("45380", "45378"),   # colonoscopy w/ biopsy subsumes diagnostic colonoscopy
+#     ("99215", "99211"),   # high complexity subsumes minimal
+#     ("99215", "99212"),
+#     ("99214", "99212"),
+#     ("93306", "93000"),   # echo subsumes EKG in same encounter
+# ]
 
-# OIG Medically Unlikely Edits: max units per day per CPT
-MUE_LIMITS = {
-    "93000": 1,   # One EKG per day
-    "27447": 1,   # One knee replacement per day
-    "27130": 1,
-    "45378": 1,
-    "90837": 4,   # Max 4 psychotherapy sessions per day
-    "97110": 8,   # Max 8 therapy units per day
-    "99215": 1,   # One highest-level E&M per day per provider
-}
+# # OIG Medically Unlikely Edits: max units per day per CPT
+# MUE_LIMITS = {
+#     "93000": 1,   # One EKG per day
+#     "27447": 1,   # One knee replacement per day
+#     "27130": 1,
+#     "45378": 1,
+#     "90837": 4,   # Max 4 psychotherapy sessions per day
+#     "97110": 8,   # Max 8 therapy units per day
+#     "99215": 1,   # One highest-level E&M per day per provider
+# }
+
+# Removed the hardcoded NCCI_BUNDLES and MUE_LIMITS from this file and moved them to cms_reference_loader.py 
+# to centralize all CMS reference data in one place. 
+# This also allows for easier updates in the future without modifying the main pipeline code.
+from cms_reference_loader import load_all_reference_data
+NCCI_BUNDLES, MUE_LIMITS = load_all_reference_data()
 
 SPECIALTIES = list({sp for v in CPT_REFERENCE.values() for sp in v["specialty"]})
 STATES = ["TX", "CA", "FL", "NY", "IL", "PA", "OH", "GA", "NC", "MI"]

@@ -1,8 +1,8 @@
 {
   "resourceType": "Bundle",
-  "id": "7711b350-c053-4983-88d3-2bc7b975bcc6",
+  "id": "c54d771b-b083-422d-9749-a5b5f102c2d3",
   "meta": {
-    "lastUpdated": "2026-03-13T21:08:12Z"
+    "lastUpdated": "2026-03-18T02:04:30Z"
   },
   "type": "searchset",
   "total": 50,
@@ -19,7 +19,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-93810",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -52,7 +52,7 @@
           "start": "2024-04-24",
           "end": "2024-04-24"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -170,7 +170,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-23434",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -203,7 +203,7 @@
           "start": "2024-08-04",
           "end": "2024-08-04"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -321,7 +321,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-13905",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -354,7 +354,7 @@
           "start": "2024-11-04",
           "end": "2024-11-04"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -472,7 +472,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-83563",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -505,7 +505,7 @@
           "start": "2024-08-17",
           "end": "2024-08-17"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -623,7 +623,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-10851",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -656,7 +656,7 @@
           "start": "2024-05-22",
           "end": "2024-05-22"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -774,7 +774,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-38221",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -807,7 +807,7 @@
           "start": "2024-02-19",
           "end": "2024-02-19"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -925,7 +925,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-55082",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -958,7 +958,7 @@
           "start": "2024-10-01",
           "end": "2024-10-01"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -1076,7 +1076,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-59615",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -1109,7 +1109,7 @@
           "start": "2024-07-04",
           "end": "2024-07-04"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -1227,7 +1227,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-19116",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -1260,7 +1260,7 @@
           "start": "2024-02-10",
           "end": "2024-02-10"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -1378,7 +1378,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-23238",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -1411,7 +1411,7 @@
           "start": "2024-03-24",
           "end": "2024-03-24"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -1529,7 +1529,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-56566",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -1562,7 +1562,7 @@
           "start": "2024-11-07",
           "end": "2024-11-07"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -1680,7 +1680,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-80010",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -1713,7 +1713,7 @@
           "start": "2024-05-18",
           "end": "2024-05-18"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -1831,7 +1831,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-99733",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -1864,7 +1864,7 @@
           "start": "2024-01-17",
           "end": "2024-01-17"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -1982,7 +1982,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-62581",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -2015,7 +2015,7 @@
           "start": "2024-06-10",
           "end": "2024-06-10"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -2133,7 +2133,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-95909",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -2166,7 +2166,7 @@
           "start": "2024-05-15",
           "end": "2024-05-15"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -2284,7 +2284,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-42325",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -2317,7 +2317,7 @@
           "start": "2024-08-07",
           "end": "2024-08-07"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -2435,7 +2435,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-57447",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -2468,7 +2468,7 @@
           "start": "2024-01-25",
           "end": "2024-01-25"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -2586,7 +2586,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-30033",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -2619,7 +2619,7 @@
           "start": "2024-02-02",
           "end": "2024-02-02"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -2737,7 +2737,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-60019",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -2770,7 +2770,7 @@
           "start": "2024-01-06",
           "end": "2024-01-06"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -2888,7 +2888,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-99353",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -2921,7 +2921,7 @@
           "start": "2024-02-27",
           "end": "2024-02-27"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -3039,7 +3039,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-66985",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -3072,7 +3072,7 @@
           "start": "2024-09-13",
           "end": "2024-09-13"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -3190,7 +3190,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-76542",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -3223,7 +3223,7 @@
           "start": "2024-11-07",
           "end": "2024-11-07"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -3341,7 +3341,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-30032",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -3374,7 +3374,7 @@
           "start": "2024-09-28",
           "end": "2024-09-28"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -3492,7 +3492,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-88504",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -3525,7 +3525,7 @@
           "start": "2024-07-04",
           "end": "2024-07-04"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -3643,7 +3643,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-41385",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -3676,7 +3676,7 @@
           "start": "2024-09-05",
           "end": "2024-09-05"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -3794,7 +3794,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-79822",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -3827,7 +3827,7 @@
           "start": "2024-03-25",
           "end": "2024-03-25"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -3945,7 +3945,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-79163",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -3978,7 +3978,7 @@
           "start": "2024-12-19",
           "end": "2024-12-19"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -4096,7 +4096,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-50857",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -4129,7 +4129,7 @@
           "start": "2024-09-21",
           "end": "2024-09-21"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -4247,7 +4247,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-25860",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -4280,7 +4280,7 @@
           "start": "2024-01-11",
           "end": "2024-01-11"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -4398,7 +4398,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-CLEAN-FHIR-87128",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -4431,7 +4431,7 @@
           "start": "2024-04-27",
           "end": "2024-04-27"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -4549,7 +4549,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-14117",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -4582,7 +4582,7 @@
           "start": "2024-05-22",
           "end": "2024-05-22"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -4708,7 +4708,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-38080",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -4741,7 +4741,7 @@
           "start": "2024-05-04",
           "end": "2024-05-04"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -4867,7 +4867,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-63354",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -4900,7 +4900,7 @@
           "start": "2024-12-03",
           "end": "2024-12-03"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -5026,7 +5026,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-56438",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -5059,7 +5059,7 @@
           "start": "2024-01-28",
           "end": "2024-01-28"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -5185,7 +5185,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-17944",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -5218,7 +5218,7 @@
           "start": "2024-02-25",
           "end": "2024-02-25"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -5344,7 +5344,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-35112",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -5377,7 +5377,7 @@
           "start": "2024-03-12",
           "end": "2024-03-12"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -5388,9 +5388,9 @@
         "provider": {
           "identifier": {
             "system": "http://hl7.org/fhir/sid/us-npi",
-            "value": "1234567890"
+            "value": "1234567896"
           },
-          "display": "Dr. Sarah Johnson"
+          "display": "Dr. Karen Wilson"
         },
         "outcome": "complete",
         "diagnosis": [
@@ -5400,8 +5400,8 @@
               "coding": [
                 {
                   "system": "http://hl7.org/fhir/sid/icd-10-cm",
-                  "code": "E11.9",
-                  "display": "Type 2 diabetes mellitus"
+                  "code": "K11.5",
+                  "display": "Sialolithiasis (salivary gland stone)"
                 }
               ]
             },
@@ -5425,8 +5425,8 @@
               "coding": [
                 {
                   "system": "http://www.ama-assn.org/go/cpt",
-                  "code": "36415",
-                  "display": "Venipuncture (should not appear with 36416)"
+                  "code": "00100",
+                  "display": "Anesthesia for salivary gland surgery"
                 }
               ]
             },
@@ -5435,19 +5435,19 @@
                 "coding": [
                   {
                     "system": "https://www.cms.gov/Medicare/Coding/place-of-service-codes",
-                    "code": "11",
-                    "display": "Office"
+                    "code": "22",
+                    "display": "Outpatient Hospital"
                   }
                 ]
               }
             },
             "servicedDate": "2024-03-12",
             "unitPrice": {
-              "value": 18.0,
+              "value": 450.0,
               "currency": "USD"
             },
             "net": {
-              "value": 18.0,
+              "value": 450.0,
               "currency": "USD"
             }
           },
@@ -5457,8 +5457,8 @@
               "coding": [
                 {
                   "system": "http://www.ama-assn.org/go/cpt",
-                  "code": "36416",
-                  "display": "Capillary blood draw (bundled per NCCI \u2014 violation)"
+                  "code": "99215",
+                  "display": "Office visit high complexity (bundled \u2014 NCCI hard edit violation)"
                 }
               ]
             },
@@ -5467,8 +5467,8 @@
                 "coding": [
                   {
                     "system": "https://www.cms.gov/Medicare/Coding/place-of-service-codes",
-                    "code": "11",
-                    "display": "Office"
+                    "code": "22",
+                    "display": "Outpatient Hospital"
                   }
                 ]
               }
@@ -5496,7 +5496,7 @@
               ]
             },
             "amount": {
-              "value": 30.0,
+              "value": 462.0,
               "currency": "USD"
             }
           }
@@ -5504,11 +5504,11 @@
         "extension": [
           {
             "url": "https://mediaguard.ai/fhir/extension/provider-specialty",
-            "valueString": "Internal Medicine"
+            "valueString": "Dermatology"
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/provider-state",
-            "valueString": "TX"
+            "valueString": "IL"
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/plan-name",
@@ -5516,7 +5516,7 @@
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/cpt-expected-specialty",
-            "valueString": "Internal Medicine"
+            "valueString": ""
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/injected-fraud-type",
@@ -5524,7 +5524,7 @@
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/fraud-note",
-            "valueString": "CPT 36415 and 36416 billed together \u2014 NCCI unbundling violation"
+            "valueString": "CPT 00100 and 99215 billed same day \u2014 anesthesia includes all E&M (NCCI hard edit)"
           }
         ]
       }
@@ -5535,7 +5535,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-34050",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -5568,7 +5568,7 @@
           "start": "2024-02-08",
           "end": "2024-02-08"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -5579,9 +5579,9 @@
         "provider": {
           "identifier": {
             "system": "http://hl7.org/fhir/sid/us-npi",
-            "value": "1234567890"
+            "value": "1234567897"
           },
-          "display": "Dr. Sarah Johnson"
+          "display": "Dr. Thomas Brown"
         },
         "outcome": "complete",
         "diagnosis": [
@@ -5591,8 +5591,8 @@
               "coding": [
                 {
                   "system": "http://hl7.org/fhir/sid/icd-10-cm",
-                  "code": "E11.9",
-                  "display": "Type 2 diabetes mellitus"
+                  "code": "K11.5",
+                  "display": "Sialolithiasis (salivary gland stone)"
                 }
               ]
             },
@@ -5616,8 +5616,8 @@
               "coding": [
                 {
                   "system": "http://www.ama-assn.org/go/cpt",
-                  "code": "36415",
-                  "display": "Venipuncture (should not appear with 36416)"
+                  "code": "00100",
+                  "display": "Anesthesia for salivary gland surgery"
                 }
               ]
             },
@@ -5626,19 +5626,19 @@
                 "coding": [
                   {
                     "system": "https://www.cms.gov/Medicare/Coding/place-of-service-codes",
-                    "code": "11",
-                    "display": "Office"
+                    "code": "22",
+                    "display": "Outpatient Hospital"
                   }
                 ]
               }
             },
             "servicedDate": "2024-02-08",
             "unitPrice": {
-              "value": 18.0,
+              "value": 450.0,
               "currency": "USD"
             },
             "net": {
-              "value": 18.0,
+              "value": 450.0,
               "currency": "USD"
             }
           },
@@ -5648,8 +5648,8 @@
               "coding": [
                 {
                   "system": "http://www.ama-assn.org/go/cpt",
-                  "code": "36416",
-                  "display": "Capillary blood draw (bundled per NCCI \u2014 violation)"
+                  "code": "99215",
+                  "display": "Office visit high complexity (bundled \u2014 NCCI hard edit violation)"
                 }
               ]
             },
@@ -5658,8 +5658,8 @@
                 "coding": [
                   {
                     "system": "https://www.cms.gov/Medicare/Coding/place-of-service-codes",
-                    "code": "11",
-                    "display": "Office"
+                    "code": "22",
+                    "display": "Outpatient Hospital"
                   }
                 ]
               }
@@ -5687,7 +5687,7 @@
               ]
             },
             "amount": {
-              "value": 30.0,
+              "value": 462.0,
               "currency": "USD"
             }
           }
@@ -5695,11 +5695,11 @@
         "extension": [
           {
             "url": "https://mediaguard.ai/fhir/extension/provider-specialty",
-            "valueString": "Internal Medicine"
+            "valueString": "Gastroenterology"
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/provider-state",
-            "valueString": "TX"
+            "valueString": "PA"
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/plan-name",
@@ -5707,7 +5707,7 @@
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/cpt-expected-specialty",
-            "valueString": "Internal Medicine"
+            "valueString": ""
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/injected-fraud-type",
@@ -5715,7 +5715,7 @@
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/fraud-note",
-            "valueString": "CPT 36415 and 36416 billed together \u2014 NCCI unbundling violation"
+            "valueString": "CPT 00100 and 99215 billed same day \u2014 anesthesia includes all E&M (NCCI hard edit)"
           }
         ]
       }
@@ -5726,7 +5726,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-82132",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -5759,7 +5759,7 @@
           "start": "2024-02-17",
           "end": "2024-02-17"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -5770,9 +5770,9 @@
         "provider": {
           "identifier": {
             "system": "http://hl7.org/fhir/sid/us-npi",
-            "value": "1234567890"
+            "value": "1234567893"
           },
-          "display": "Dr. Sarah Johnson"
+          "display": "Dr. James Williams"
         },
         "outcome": "complete",
         "diagnosis": [
@@ -5782,8 +5782,8 @@
               "coding": [
                 {
                   "system": "http://hl7.org/fhir/sid/icd-10-cm",
-                  "code": "E11.9",
-                  "display": "Type 2 diabetes mellitus"
+                  "code": "K11.5",
+                  "display": "Sialolithiasis (salivary gland stone)"
                 }
               ]
             },
@@ -5807,8 +5807,8 @@
               "coding": [
                 {
                   "system": "http://www.ama-assn.org/go/cpt",
-                  "code": "36415",
-                  "display": "Venipuncture (should not appear with 36416)"
+                  "code": "00100",
+                  "display": "Anesthesia for salivary gland surgery"
                 }
               ]
             },
@@ -5817,19 +5817,19 @@
                 "coding": [
                   {
                     "system": "https://www.cms.gov/Medicare/Coding/place-of-service-codes",
-                    "code": "11",
-                    "display": "Office"
+                    "code": "22",
+                    "display": "Outpatient Hospital"
                   }
                 ]
               }
             },
             "servicedDate": "2024-02-17",
             "unitPrice": {
-              "value": 18.0,
+              "value": 450.0,
               "currency": "USD"
             },
             "net": {
-              "value": 18.0,
+              "value": 450.0,
               "currency": "USD"
             }
           },
@@ -5839,8 +5839,8 @@
               "coding": [
                 {
                   "system": "http://www.ama-assn.org/go/cpt",
-                  "code": "36416",
-                  "display": "Capillary blood draw (bundled per NCCI \u2014 violation)"
+                  "code": "99215",
+                  "display": "Office visit high complexity (bundled \u2014 NCCI hard edit violation)"
                 }
               ]
             },
@@ -5849,8 +5849,8 @@
                 "coding": [
                   {
                     "system": "https://www.cms.gov/Medicare/Coding/place-of-service-codes",
-                    "code": "11",
-                    "display": "Office"
+                    "code": "22",
+                    "display": "Outpatient Hospital"
                   }
                 ]
               }
@@ -5878,7 +5878,7 @@
               ]
             },
             "amount": {
-              "value": 30.0,
+              "value": 462.0,
               "currency": "USD"
             }
           }
@@ -5886,11 +5886,11 @@
         "extension": [
           {
             "url": "https://mediaguard.ai/fhir/extension/provider-specialty",
-            "valueString": "Internal Medicine"
+            "valueString": "Cardiology"
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/provider-state",
-            "valueString": "TX"
+            "valueString": "NY"
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/plan-name",
@@ -5898,7 +5898,7 @@
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/cpt-expected-specialty",
-            "valueString": "Internal Medicine"
+            "valueString": ""
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/injected-fraud-type",
@@ -5906,7 +5906,7 @@
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/fraud-note",
-            "valueString": "CPT 36415 and 36416 billed together \u2014 NCCI unbundling violation"
+            "valueString": "CPT 00100 and 99215 billed same day \u2014 anesthesia includes all E&M (NCCI hard edit)"
           }
         ]
       }
@@ -5917,7 +5917,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-31798",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -5950,7 +5950,7 @@
           "start": "2024-04-19",
           "end": "2024-04-19"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -5961,9 +5961,9 @@
         "provider": {
           "identifier": {
             "system": "http://hl7.org/fhir/sid/us-npi",
-            "value": "1234567890"
+            "value": "1234567896"
           },
-          "display": "Dr. Sarah Johnson"
+          "display": "Dr. Karen Wilson"
         },
         "outcome": "complete",
         "diagnosis": [
@@ -5973,8 +5973,8 @@
               "coding": [
                 {
                   "system": "http://hl7.org/fhir/sid/icd-10-cm",
-                  "code": "E11.9",
-                  "display": "Type 2 diabetes mellitus"
+                  "code": "K11.5",
+                  "display": "Sialolithiasis (salivary gland stone)"
                 }
               ]
             },
@@ -5998,8 +5998,8 @@
               "coding": [
                 {
                   "system": "http://www.ama-assn.org/go/cpt",
-                  "code": "36415",
-                  "display": "Venipuncture (should not appear with 36416)"
+                  "code": "00100",
+                  "display": "Anesthesia for salivary gland surgery"
                 }
               ]
             },
@@ -6008,19 +6008,19 @@
                 "coding": [
                   {
                     "system": "https://www.cms.gov/Medicare/Coding/place-of-service-codes",
-                    "code": "11",
-                    "display": "Office"
+                    "code": "22",
+                    "display": "Outpatient Hospital"
                   }
                 ]
               }
             },
             "servicedDate": "2024-04-19",
             "unitPrice": {
-              "value": 18.0,
+              "value": 450.0,
               "currency": "USD"
             },
             "net": {
-              "value": 18.0,
+              "value": 450.0,
               "currency": "USD"
             }
           },
@@ -6030,8 +6030,8 @@
               "coding": [
                 {
                   "system": "http://www.ama-assn.org/go/cpt",
-                  "code": "36416",
-                  "display": "Capillary blood draw (bundled per NCCI \u2014 violation)"
+                  "code": "99215",
+                  "display": "Office visit high complexity (bundled \u2014 NCCI hard edit violation)"
                 }
               ]
             },
@@ -6040,8 +6040,8 @@
                 "coding": [
                   {
                     "system": "https://www.cms.gov/Medicare/Coding/place-of-service-codes",
-                    "code": "11",
-                    "display": "Office"
+                    "code": "22",
+                    "display": "Outpatient Hospital"
                   }
                 ]
               }
@@ -6069,7 +6069,7 @@
               ]
             },
             "amount": {
-              "value": 30.0,
+              "value": 462.0,
               "currency": "USD"
             }
           }
@@ -6077,11 +6077,11 @@
         "extension": [
           {
             "url": "https://mediaguard.ai/fhir/extension/provider-specialty",
-            "valueString": "Internal Medicine"
+            "valueString": "Dermatology"
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/provider-state",
-            "valueString": "TX"
+            "valueString": "IL"
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/plan-name",
@@ -6089,7 +6089,7 @@
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/cpt-expected-specialty",
-            "valueString": "Internal Medicine"
+            "valueString": ""
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/injected-fraud-type",
@@ -6097,7 +6097,7 @@
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/fraud-note",
-            "valueString": "CPT 36415 and 36416 billed together \u2014 NCCI unbundling violation"
+            "valueString": "CPT 00100 and 99215 billed same day \u2014 anesthesia includes all E&M (NCCI hard edit)"
           }
         ]
       }
@@ -6108,7 +6108,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-17685",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -6141,7 +6141,7 @@
           "start": "2024-07-18",
           "end": "2024-07-18"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -6152,9 +6152,9 @@
         "provider": {
           "identifier": {
             "system": "http://hl7.org/fhir/sid/us-npi",
-            "value": "1234567890"
+            "value": "1234567894"
           },
-          "display": "Dr. Sarah Johnson"
+          "display": "Dr. Linda Martinez"
         },
         "outcome": "complete",
         "diagnosis": [
@@ -6164,8 +6164,8 @@
               "coding": [
                 {
                   "system": "http://hl7.org/fhir/sid/icd-10-cm",
-                  "code": "E11.9",
-                  "display": "Type 2 diabetes mellitus"
+                  "code": "K11.5",
+                  "display": "Sialolithiasis (salivary gland stone)"
                 }
               ]
             },
@@ -6189,8 +6189,8 @@
               "coding": [
                 {
                   "system": "http://www.ama-assn.org/go/cpt",
-                  "code": "36415",
-                  "display": "Venipuncture (should not appear with 36416)"
+                  "code": "00100",
+                  "display": "Anesthesia for salivary gland surgery"
                 }
               ]
             },
@@ -6199,19 +6199,19 @@
                 "coding": [
                   {
                     "system": "https://www.cms.gov/Medicare/Coding/place-of-service-codes",
-                    "code": "11",
-                    "display": "Office"
+                    "code": "22",
+                    "display": "Outpatient Hospital"
                   }
                 ]
               }
             },
             "servicedDate": "2024-07-18",
             "unitPrice": {
-              "value": 18.0,
+              "value": 450.0,
               "currency": "USD"
             },
             "net": {
-              "value": 18.0,
+              "value": 450.0,
               "currency": "USD"
             }
           },
@@ -6221,8 +6221,8 @@
               "coding": [
                 {
                   "system": "http://www.ama-assn.org/go/cpt",
-                  "code": "36416",
-                  "display": "Capillary blood draw (bundled per NCCI \u2014 violation)"
+                  "code": "99215",
+                  "display": "Office visit high complexity (bundled \u2014 NCCI hard edit violation)"
                 }
               ]
             },
@@ -6231,8 +6231,8 @@
                 "coding": [
                   {
                     "system": "https://www.cms.gov/Medicare/Coding/place-of-service-codes",
-                    "code": "11",
-                    "display": "Office"
+                    "code": "22",
+                    "display": "Outpatient Hospital"
                   }
                 ]
               }
@@ -6260,7 +6260,7 @@
               ]
             },
             "amount": {
-              "value": 30.0,
+              "value": 462.0,
               "currency": "USD"
             }
           }
@@ -6268,11 +6268,11 @@
         "extension": [
           {
             "url": "https://mediaguard.ai/fhir/extension/provider-specialty",
-            "valueString": "Internal Medicine"
+            "valueString": "Neurology"
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/provider-state",
-            "valueString": "TX"
+            "valueString": "OH"
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/plan-name",
@@ -6280,7 +6280,7 @@
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/cpt-expected-specialty",
-            "valueString": "Internal Medicine"
+            "valueString": ""
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/injected-fraud-type",
@@ -6288,7 +6288,7 @@
           },
           {
             "url": "https://mediaguard.ai/fhir/extension/fraud-note",
-            "valueString": "CPT 36415 and 36416 billed together \u2014 NCCI unbundling violation"
+            "valueString": "CPT 00100 and 99215 billed same day \u2014 anesthesia includes all E&M (NCCI hard edit)"
           }
         ]
       }
@@ -6299,7 +6299,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-69638",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -6332,7 +6332,7 @@
           "start": "2024-03-20",
           "end": "2024-03-20"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -6458,7 +6458,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-48890",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -6491,7 +6491,7 @@
           "start": "2024-06-09",
           "end": "2024-06-09"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -6617,7 +6617,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-16572",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -6650,7 +6650,7 @@
           "start": "2024-01-30",
           "end": "2024-01-30"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -6776,7 +6776,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-34356",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -6809,7 +6809,7 @@
           "start": "2024-12-11",
           "end": "2024-12-11"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -6935,7 +6935,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-62923",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -6968,7 +6968,7 @@
           "start": "2024-10-23",
           "end": "2024-10-23"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -7094,7 +7094,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-91183",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -7127,7 +7127,7 @@
           "start": "2024-05-13",
           "end": "2024-05-13"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -7253,7 +7253,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-97782",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -7286,7 +7286,7 @@
           "start": "2024-07-21",
           "end": "2024-07-21"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -7412,7 +7412,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-98039",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -7445,7 +7445,7 @@
           "start": "2024-06-10",
           "end": "2024-06-10"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -7571,7 +7571,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-11220",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -7604,7 +7604,7 @@
           "start": "2024-02-07",
           "end": "2024-02-07"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -7730,7 +7730,7 @@
         "resourceType": "ExplanationOfBenefit",
         "id": "CLM-FWA-FHIR-76307",
         "meta": {
-          "lastUpdated": "2026-03-13T21:08:12Z",
+          "lastUpdated": "2026-03-18T02:04:30Z",
           "profile": [
             "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
           ]
@@ -7763,7 +7763,7 @@
           "start": "2024-02-05",
           "end": "2024-02-05"
         },
-        "created": "2026-03-13T21:08:12Z",
+        "created": "2026-03-18T02:04:30Z",
         "insurer": {
           "identifier": {
             "system": "https://www.cms.gov/mediaguard/payer-id",

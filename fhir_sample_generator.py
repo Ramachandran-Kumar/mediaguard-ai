@@ -253,19 +253,37 @@ FWA_SCENARIOS = [
         "specialty": "Internal Medicine",  # Upcoding by internist — clinically plausible
         "note": "High complexity visit billed for simple cold — typical upcoding pattern"
     },
-    # Pattern 2: Unbundling — billing 36415 + 36416 together on same day
-    # NCCI says 36415 (venipuncture) already includes 36416 (capillary draw)
+    # # Pattern 2: Unbundling — billing 36415 + 36416 together on same day
+    # # NCCI says 36415 (venipuncture) already includes 36416 (capillary draw)
+    # {
+    #     "fraud_type": "UNBUNDLING",
+    #     "cpt": "36415", "cpt_desc": "Venipuncture (should not appear with 36416)",
+    #     "icd": "E11.9",  "icd_desc": "Type 2 diabetes mellitus",
+    #     "amount": 18.00,
+    #     "additional_cpt": "36416",
+    #     "additional_desc": "Capillary blood draw (bundled per NCCI — violation)",
+    #     "pos_code": 11,       # Office — both codes are office-based procedures
+    #     "specialty": "Internal Medicine",  # Blood draws are common in Internal Medicine
+    #     "note": "CPT 36415 and 36416 billed together — NCCI unbundling violation"
+    # },
+
+    # Pattern 2: Unbundling — billing anesthesia + office visit same day
+    # CPT 00100 + 99215 is an ACTIVE HARD NCCI edit (confirmed in CMS ccipra-v321r0-f1.xlsx)
+    # Rationale: "Standard preparation/monitoring services for anesthesia"
+    # Anesthesia services include all patient E&M and monitoring — 99215 cannot
+    # be billed separately on the same day as anesthesia. Hard edit: modifier not allowed.
     {
-        "fraud_type": "UNBUNDLING",
-        "cpt": "36415", "cpt_desc": "Venipuncture (should not appear with 36416)",
-        "icd": "E11.9",  "icd_desc": "Type 2 diabetes mellitus",
-        "amount": 18.00,
-        "additional_cpt": "36416",
-        "additional_desc": "Capillary blood draw (bundled per NCCI — violation)",
-        "pos_code": 11,       # Office — both codes are office-based procedures
-        "specialty": "Internal Medicine",  # Blood draws are common in Internal Medicine
-        "note": "CPT 36415 and 36416 billed together — NCCI unbundling violation"
+    "fraud_type": "UNBUNDLING",
+    "cpt": "00100", "cpt_desc": "Anesthesia for salivary gland surgery",
+    "icd": "K11.5",  "icd_desc": "Sialolithiasis (salivary gland stone)",
+    "amount": 450.00,
+    "additional_cpt": "99215",
+    "additional_desc": "Office visit high complexity (bundled — NCCI hard edit violation)",
+    "pos_code": 22,  # Outpatient Hospital — surgery setting
+    "cpt_expected_specialty": "Anesthesiology",
+    "note": "CPT 00100 and 99215 billed same day — anesthesia includes all E&M (NCCI hard edit)"
     },
+    
     # Pattern 3: ICD-CPT mismatch — knee replacement but wrong diagnosis
     # POS is Inpatient (21) — the SETTING is correct for knee replacement.
     # The DIAGNOSIS (hip stiffness M25.361) does not justify knee surgery.

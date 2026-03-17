@@ -2,7 +2,7 @@
   "resourceType": "ExplanationOfBenefit",
   "id": "CLM-CLEAN-FHIR-30033",
   "meta": {
-    "lastUpdated": "2026-03-13T21:08:12Z",
+    "lastUpdated": "2026-03-18T02:04:30Z",
     "profile": [
       "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
     ]
@@ -35,7 +35,7 @@
     "start": "2024-02-02",
     "end": "2024-02-02"
   },
-  "created": "2026-03-13T21:08:12Z",
+  "created": "2026-03-18T02:04:30Z",
   "insurer": {
     "identifier": {
       "system": "https://www.cms.gov/mediaguard/payer-id",

@@ -2,7 +2,7 @@
   "resourceType": "ExplanationOfBenefit",
   "id": "CLM-FWA-FHIR-31798",
   "meta": {
-    "lastUpdated": "2026-03-13T21:08:12Z",
+    "lastUpdated": "2026-03-18T02:04:30Z",
     "profile": [
       "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Professional-NonClinician"
     ]
@@ -35,7 +35,7 @@
     "start": "2024-04-19",
     "end": "2024-04-19"
   },
-  "created": "2026-03-13T21:08:12Z",
+  "created": "2026-03-18T02:04:30Z",
   "insurer": {
     "identifier": {
       "system": "https://www.cms.gov/mediaguard/payer-id",
@@ -46,9 +46,9 @@
   "provider": {
     "identifier": {
       "system": "http://hl7.org/fhir/sid/us-npi",
-      "value": "1234567890"
+      "value": "1234567896"
     },
-    "display": "Dr. Sarah Johnson"
+    "display": "Dr. Karen Wilson"
   },
   "outcome": "complete",
   "diagnosis": [
@@ -58,8 +58,8 @@
         "coding": [
           {
             "system": "http://hl7.org/fhir/sid/icd-10-cm",
-            "code": "E11.9",
-            "display": "Type 2 diabetes mellitus"
+            "code": "K11.5",
+            "display": "Sialolithiasis (salivary gland stone)"
           }
         ]
       },
@@ -83,8 +83,8 @@
         "coding": [
           {
             "system": "http://www.ama-assn.org/go/cpt",
-            "code": "36415",
-            "display": "Venipuncture (should not appear with 36416)"
+            "code": "00100",
+            "display": "Anesthesia for salivary gland surgery"
           }
         ]
       },
@@ -93,19 +93,19 @@
           "coding": [
             {
               "system": "https://www.cms.gov/Medicare/Coding/place-of-service-codes",
-              "code": "11",
-              "display": "Office"
+              "code": "22",
+              "display": "Outpatient Hospital"
             }
           ]
         }
       },
       "servicedDate": "2024-04-19",
       "unitPrice": {
-        "value": 18.0,
+        "value": 450.0,
         "currency": "USD"
       },
       "net": {
-        "value": 18.0,
+        "value": 450.0,
         "currency": "USD"
       }
     },
@@ -115,8 +115,8 @@
         "coding": [
           {
             "system": "http://www.ama-assn.org/go/cpt",
-            "code": "36416",
-            "display": "Capillary blood draw (bundled per NCCI \u2014 violation)"
+            "code": "99215",
+            "display": "Office visit high complexity (bundled \u2014 NCCI hard edit violation)"
           }
         ]
       },
@@ -125,8 +125,8 @@
           "coding": [
             {
               "system": "https://www.cms.gov/Medicare/Coding/place-of-service-codes",
-              "code": "11",
-              "display": "Office"
+              "code": "22",
+              "display": "Outpatient Hospital"
             }
           ]
         }
@@ -154,7 +154,7 @@
         ]
       },
       "amount": {
-        "value": 30.0,
+        "value": 462.0,
         "currency": "USD"
       }
     }
@@ -162,11 +162,11 @@
   "extension": [
     {
       "url": "https://mediaguard.ai/fhir/extension/provider-specialty",
-      "valueString": "Internal Medicine"
+      "valueString": "Dermatology"
     },
     {
       "url": "https://mediaguard.ai/fhir/extension/provider-state",
-      "valueString": "TX"
+      "valueString": "IL"
     },
     {
       "url": "https://mediaguard.ai/fhir/extension/plan-name",
@@ -174,7 +174,7 @@
     },
     {
       "url": "https://mediaguard.ai/fhir/extension/cpt-expected-specialty",
-      "valueString": "Internal Medicine"
+      "valueString": ""
     },
     {
       "url": "https://mediaguard.ai/fhir/extension/injected-fraud-type",
@@ -182,7 +182,7 @@
     },
     {
       "url": "https://mediaguard.ai/fhir/extension/fraud-note",
-      "valueString": "CPT 36415 and 36416 billed together \u2014 NCCI unbundling violation"
+      "valueString": "CPT 00100 and 99215 billed same day \u2014 anesthesia includes all E&M (NCCI hard edit)"
     }
   ]
 }
