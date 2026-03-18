@@ -668,7 +668,7 @@ class FWAReasoningEngine:
         results = []
         for i, claim in enumerate(claims, 1):
             print(f"  [{i:02d}/{len(claims)}] Analyzing {claim.claim_id} "
-                  f"(CPT {claim.cpt_code}, risk {claim.composite_risk_score:.0f}/100)...", end=" ")
+                  f"(CPT {str(claim.cpt_code).zfill(5)}, risk {claim.composite_risk_score:.0f}/100)...", end=" ")
 
             result = self.analyze_claim(claim)
             results.append(result)

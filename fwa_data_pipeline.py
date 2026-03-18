@@ -40,8 +40,11 @@ np.random.seed(RANDOM_SEED)
 # ── DATA SOURCE SWITCH ──────────────────────────
 # Set to "fhir" to use FHIR-converted claims
 # Set to "synthetic" to use original generated data (default)
+# set to "synpuf" to use CMS SynPUF sample data (converted to our format) for a real-world test of the pipeline.
 # DATA_SOURCE = "synthetic"
-DATA_SOURCE = "fhir"
+# DATA_SOURCE = "fhir"
+DATA_SOURCE = 'synpuf'  
+
 
 FHIR_CLAIMS_PATH = os.path.join(OUTPUT_DIR, "fhir_converted_claims.csv")
 
@@ -385,7 +388,7 @@ def normalize_and_enrich(df: pd.DataFrame) -> pd.DataFrame:
     df["date_of_service"] = pd.to_datetime(df["date_of_service"])
     df["billed_amount"] = pd.to_numeric(df["billed_amount"], errors="coerce").fillna(0)
     df["units"] = pd.to_numeric(df["units"], errors="coerce").fillna(1).astype(int)
-    df["cpt_code"] = df["cpt_code"].astype(str).str.strip()
+    df["cpt_code"] = df["cpt_code"].astype(str).str.strip().str.zfill(5)
     df["icd_primary"] = df["icd_primary"].astype(str).str.strip()
     df["provider_npi"] = df["provider_npi"].astype(str).str.strip()
 
@@ -859,7 +862,8 @@ if __name__ == "__main__":
             "icd_code":     "icd_primary",
             "service_date": "date_of_service",
         })
-
+        # Ensure CPT code is zero-padded to 5 digits and remove any decimal artifacts from CSV reading
+        df["cpt_code"] = df["cpt_code"].astype(str).str.strip().str.zfill(5) 
         # Fraud label — present in synthetic FHIR data for evaluation.
         # Real CMS BCDA claims won't have fraud_type; defaults to CLEAN.
         df["fraud_label"] = df["fraud_type"].fillna("CLEAN").replace("NONE", "CLEAN") \
@@ -878,7 +882,9 @@ if __name__ == "__main__":
         for _, row in df[df["additional_cpt"] != ""].iterrows():
             new_row                    = row.copy()
             new_row["claim_id"]        = row["claim_id"] + "-B"
-            new_row["cpt_code"]        = row["additional_cpt"].split(";")[0].split(".")[0].strip()
+            #new_row["cpt_code"]        = row["additional_cpt"].split(";")[0].split(".")[0].strip() # Handle multiple additional CPTs separated by semicolon, take the first one
+            # Ensure CPT code is zero-padded to 5 digits and remove any decimal artifacts from CSV reading
+            new_row["cpt_code"] = str(row["additional_cpt"].split(";")[0]).strip().zfill(5) 
             new_row["cpt_description"] = "Bundled code (NCCI expansion)"
             new_row["additional_cpt"]  = ""
             # Carry the parent fraud_label so evaluation metrics stay correct
@@ -898,6 +904,19 @@ if __name__ == "__main__":
         print(f"      Run fhir_sample_generator.py then fhir_converter.py first.")
         print(f"      Falling back to synthetic data...\n")
         df = generate_synthetic_claims(n_claims=500, inject_fraud=True)
+    # The synthetic data generator creates the same columns as the FHIR converter output, so no renaming needed.
+    elif DATA_SOURCE == "synpuf" and os.path.exists("output/synpuf_converted_claims.csv"):
+        print(f"\n  [SOURCE] SynPUF mode — loading output/synpuf_converted_claims.csv")
+        df = pd.read_csv("output/synpuf_converted_claims.csv")
+        print(f"    ✓ Loaded {len(df)} SynPUF claims")
+        df = df.rename(columns={
+        "icd_code":     "icd_primary",
+        "service_date": "date_of_service",
+        })
+        df["fraud_label"] = "CLEAN"
+        if "patient_age"    not in df.columns: df["patient_age"]    = 65
+        if "patient_gender" not in df.columns: df["patient_gender"] = "U"
+        if "units"          not in df.columns: df["units"]          = 1
     else:
         print(f"\n  [SOURCE] Synthetic mode — generating claims...")
         df = generate_synthetic_claims(n_claims=500, inject_fraud=True)
