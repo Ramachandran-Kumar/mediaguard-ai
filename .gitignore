@@ -1,0 +1,14 @@
+# Large CMS data files
+data/*.CSV
+data/*.csv
+data/*.xlsx
+data/*.xls
+data/*.zip
+
+# Pipeline outputs
+output/
+
+# Python
+__pycache__/
+*.pyc
+.env 
