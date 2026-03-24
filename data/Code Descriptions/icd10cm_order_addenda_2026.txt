@@ -1,0 +1,22 @@
+
+Headers
+  23467 headers in icd10cm_order_2026.txt
+  23467 headers in icd10cm_order_2026.txt
+      0 additions
+      0 deletions
+      0 revisions
+of which
+      0 revisions to both long and short titles
+      0 revisions to long title only
+      0 revisions to short title only
+
+Codes
+  74719 codes in icd10cm_order_2026.txt
+  74719 codes in icd10cm_order_2026.txt
+      0 additions
+      0 deletions
+      0 revisions
+of which
+      0 revisions to both long and short titles
+      0 revisions to long title only
+      0 revisions to short title only

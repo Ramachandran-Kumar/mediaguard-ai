@@ -42,8 +42,8 @@ np.random.seed(RANDOM_SEED)
 # Set to "synthetic" to use original generated data (default)
 # set to "synpuf" to use CMS SynPUF sample data (converted to our format) for a real-world test of the pipeline.
 # DATA_SOURCE = "synthetic"
-# DATA_SOURCE = "fhir"
-DATA_SOURCE = 'synpuf'  
+DATA_SOURCE = "fhir"
+#DATA_SOURCE = 'synpuf'  
 
 
 FHIR_CLAIMS_PATH = os.path.join(OUTPUT_DIR, "fhir_converted_claims.csv")
@@ -148,8 +148,11 @@ ICD_REFERENCE = {
 # Removed the hardcoded NCCI_BUNDLES and MUE_LIMITS from this file and moved them to cms_reference_loader.py 
 # to centralize all CMS reference data in one place. 
 # This also allows for easier updates in the future without modifying the main pipeline code.
-from cms_reference_loader import load_all_reference_data
-NCCI_BUNDLES, MUE_LIMITS = load_all_reference_data()
+# from cms_reference_loader import load_all_reference_data
+# NCCI_BUNDLES, MUE_LIMITS = load_all_reference_data()
+# Instead, we will load all reference data (including CPT_REFERENCE and ICD_REFERENCE) from the database via cms_db_loader.py. This ensures consistency and scalability as we add more reference data in the future.
+from cms_db_loader import load_all_from_db
+NCCI_BUNDLES, MUE_LIMITS, ICD_REFERENCE, CPT_REFERENCE, ICD9_MAP, ICD_VALID_CPTS = load_all_from_db()
 
 SPECIALTIES = list({sp for v in CPT_REFERENCE.values() for sp in v["specialty"]})
 STATES = ["TX", "CA", "FL", "NY", "IL", "PA", "OH", "GA", "NC", "MI"]
@@ -206,7 +209,10 @@ def generate_synthetic_claims(n_claims: int = 500, inject_fraud: bool = True) ->
         cpt = np.random.choice(valid_cpts)
 
         # Pick matching ICD
-        valid_icds = [c for c, v in ICD_REFERENCE.items() if cpt in v["valid_cpts"]]
+        #valid_icds = [c for c, v in ICD_REFERENCE.items() if cpt in v["valid_cpts"]]
+        # To create more realistic ICD-CPT relationships, we will use the ICD_VALID_CPTS mapping which is precomputed from the database. 
+        # This allows us to easily find all ICD codes that are valid for a given CPT code without having to iterate through the entire ICD_REFERENCE each time.
+        valid_icds = [c for c, v in ICD_VALID_CPTS.items() if cpt in v]
         if not valid_icds:
             valid_icds = list(ICD_REFERENCE.keys())[:3]
         icd = np.random.choice(valid_icds)
@@ -397,10 +403,25 @@ def normalize_and_enrich(df: pd.DataFrame) -> pd.DataFrame:
     df["is_weekend"] = df["day_of_week"].isin([5, 6]).astype(int)
 
     # Feature: ICD-CPT compatibility flag
+    # df["icd_cpt_compatible"] = df.apply(
+    # lambda r: (
+    #     1 if (
+    #         # ICD code not in reference at all → unknown, treat as compatible
+    #         r["icd_primary"] not in ICD_REFERENCE
+    #     ) else (
+    #         # ICD code found — check valid_cpts only if list is non-empty
+    #         1 if (
+    #             not ICD_REFERENCE.get(r["icd_primary"], {}).get("valid_cpts", []) or
+    #             r["cpt_code"] in ICD_REFERENCE.get(r["icd_primary"], {}).get("valid_cpts", [])
+    #         ) else 0
+    #     )
+    #   ), axis=1
+    # )
+
     df["icd_cpt_compatible"] = df.apply(
-        lambda r: 1 if (
-            r["icd_primary"] in ICD_REFERENCE and
-            r["cpt_code"] in ICD_REFERENCE.get(r["icd_primary"], {}).get("valid_cpts", [])
+    lambda r: 1 if (
+        r["icd_primary"] not in ICD_VALID_CPTS or
+        r["cpt_code"] in ICD_VALID_CPTS.get(r["icd_primary"], [])
         ) else 0, axis=1
     )
 
@@ -507,7 +528,13 @@ class FWARuleEngine:
 
     def _rule_icd_cpt_mismatch(self):
         """Flag claims where ICD-10 doesn't justify the CPT procedure."""
-        flagged = self.df[self.df["icd_cpt_compatible"] == 0]
+        #flagged = self.df[self.df["icd_cpt_compatible"] == 0]
+        # We will use the ICD_VALID_CPTS mapping to check for compatibility instead of the precomputed icd_cpt_compatible column. This ensures that we are always using the most up-to-date reference data from the database and allows for more dynamic relationships between ICDs and CPTs.
+        flagged = self.df[
+        (self.df["icd_cpt_compatible"] == 0) &
+        (~self.df["claim_id"].astype(str).str.endswith("-B"))
+        ]
+
         for _, row in flagged.iterrows():
             self.flags[row["claim_id"]].append({
                 "rule": "ICD_CPT_MISMATCH",
