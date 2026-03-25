@@ -136,7 +136,7 @@ resolved the specific pattern — your job is to explain it clinically in the na
 FRAUD CATEGORY SELECTION — use in this priority order:
   1. If "★ CONFIRMED FRAUD PATTERN" is present → use that exact category label
   2. Otherwise map the rule engine finding:
-       ICD_CPT_MISMATCH fired      → "MEDICALLY_UNNECESSARY"
+       ICD_CPT_MISMATCH fired      → "ICD_CPT_MISMATCH"
        NCCI_UNBUNDLING fired       → "UNBUNDLING"
        UPCODING_PROXY fired        → "UPCODING"
        SPECIALTY_MISMATCH fired    → "SPECIALTY_MISMATCH"
@@ -160,7 +160,7 @@ CRITICAL: Respond with ONLY a valid JSON object. No preamble, no markdown, no ex
   "plausible": <true or false — is the claim clinically defensible?>,
   "confidence": <integer 0-100 — how certain are you of your finding?>,
   "risk_score": <integer 0-100 — overall FWA risk>,
-  "fraud_category": <"CLEAN" | "UPCODING" | "UNBUNDLING" | "PHANTOM_BILLING" | "MEDICALLY_UNNECESSARY" | "DUPLICATE" | "SPECIALTY_MISMATCH" | "STATISTICAL_OUTLIER">,
+  "fraud_category": <"CLEAN" | "UPCODING" | "UNBUNDLING" | "ICD_CPT_MISMATCH" | "PHANTOM_BILLING" | "MEDICALLY_UNNECESSARY" | "DUPLICATE" | "SPECIALTY_MISMATCH" | "STATISTICAL_OUTLIER">,
   "narrative": <string: 2-3 sentences. Name the specific violation. Explain the clinical reason it is or is not fraud.>,
   "red_flags": <array of strings — each flag names a specific clinical or billing concern>,
   "recommendation": <"APPROVE" | "REVIEW" | "DENY" | "REFER_TO_SIU">
@@ -204,7 +204,7 @@ def build_claim_prompt(claim: ClaimRecord) -> str:
     # ICD_CPT_MISMATCH in the pipeline becomes MEDICALLY_UNNECESSARY in output
     # because that is the correct clinical category name for this violation.
     category_map = {
-        "ICD_CPT_MISMATCH":      "MEDICALLY_UNNECESSARY",
+        "ICD_CPT_MISMATCH":       "ICD_CPT_MISMATCH",
         "UNBUNDLING":            "UNBUNDLING",
         "UPCODING":              "UPCODING",
         "MEDICALLY_UNNECESSARY": "MEDICALLY_UNNECESSARY",
