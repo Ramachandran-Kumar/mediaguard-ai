@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediGuard AI — Data Flow Diagram</title>
+<style>
+  body { margin: 0; padding: 32px; background: #F8FAFC; font-family: Arial, sans-serif; }
+  h1 { font-size: 22px; font-weight: 700; color: #1F4E79; margin: 0 0 4px; }
+  p { font-size: 13px; color: #595959; margin: 0 0 28px; }
+  svg { width: 100%; max-width: 860px; display: block; }
+  .footer { margin-top: 20px; font-size: 11px; color: #888; }
+</style>
+</head>
+<body>
+<h1>MediGuard AI — Data Flow (Single Claim)</h1>
+<p>How one claim travels from raw input to SIU referral · FHIR R4 path · six layers · Groq LLM · March 2026</p>
+
+<svg viewBox="0 0 860 820" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <marker id="arr-purple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <marker id="arr-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <marker id="arr-gray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#B4B2A9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<!-- ── STEP 1: RAW CLAIM ── -->
+<rect x="230" y="30" width="400" height="68" rx="10" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.5"/>
+<text x="430" y="54" text-anchor="middle" font-size="14" font-weight="700" fill="#085041">Raw claim arrives</text>
+<text x="430" y="72" text-anchor="middle" font-size="12" fill="#0F6E56">FHIR R4 ExplanationOfBenefit JSON</text>
+<text x="430" y="87" text-anchor="middle" font-size="11" fill="#0F6E56">or  CMS SynPUF CSV row</text>
+
+<!-- transform label -->
+<line x1="430" y1="98" x2="430" y2="138" stroke="#888" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="444" y="122" font-size="11" fill="#888">parse fields</text>
+
+<!-- ── STEP 2: LAYER 1 CONVERSION ── -->
+<rect x="170" y="138" width="520" height="76" rx="10" fill="#DEEAF1" stroke="#2E75B6" stroke-width="1.5"/>
+<text x="430" y="162" text-anchor="middle" font-size="14" font-weight="700" fill="#042C53">Layer 1 — conversion</text>
+<text x="430" y="180" text-anchor="middle" font-size="12" fill="#185FA5">extract CPT · ICD · NPI · POS · billed amount</text>
+<text x="430" y="196" text-anchor="middle" font-size="12" fill="#185FA5">FHIR path: fhir_converter.py  |  SynPUF path: cms_synpuf_loader.py</text>
+<text x="430" y="208" text-anchor="middle" font-size="11" fill="#185FA5">SynPUF only: ICD-9 → ICD-10 crosswalk via icd9_crosswalk DB table</text>
+
+<line x1="430" y1="214" x2="430" y2="254" stroke="#888" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="444" y="238" font-size="11" fill="#888">normalize columns</text>
+
+<!-- ── STEP 3: LAYER 2 ENRICHMENT ── -->
+<rect x="170" y="254" width="520" height="76" rx="10" fill="#DEEAF1" stroke="#2E75B6" stroke-width="1.5"/>
+<text x="430" y="278" text-anchor="middle" font-size="14" font-weight="700" fill="#042C53">Layer 2 — normalisation &amp; enrichment</text>
+<text x="430" y="296" text-anchor="middle" font-size="12" fill="#185FA5">icd_cpt_compatible · cost_ratio_vs_benchmark · specialty_mismatch</text>
+<text x="430" y="312" text-anchor="middle" font-size="12" fill="#185FA5">is_weekend · NCCI -B row expansion for unbundling detection</text>
+<text x="430" y="325" text-anchor="middle" font-size="11" fill="#185FA5">fwa_data_pipeline.py  |  cms_db_loader.py</text>
+
+<line x1="430" y1="330" x2="430" y2="370" stroke="#888" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="444" y="354" font-size="11" fill="#888">check rules</text>
+
+<!-- ── STEP 4: LAYER 3 RULE ENGINE ── -->
+<rect x="170" y="370" width="520" height="88" rx="10" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+<text x="430" y="394" text-anchor="middle" font-size="14" font-weight="700" fill="#26215C">Layer 3 — OIG / NCCI rule engine</text>
+<text x="430" y="412" text-anchor="middle" font-size="12" fill="#3C3489">NCCI pair check (131,611 pairs)  ·  MUE limit check (12,453 codes)</text>
+<text x="430" y="428" text-anchor="middle" font-size="12" fill="#3C3489">ICD-CPT validation (56 domain rules)  ·  specialty mismatch  ·  cost outlier</text>
+<text x="430" y="444" text-anchor="middle" font-size="11" fill="#3C3489">→ flag type + severity assigned  ·  composite risk score calculated</text>
+<text x="430" y="456" text-anchor="middle" font-size="10" fill="#7F77DD">-B rows excluded from ICD_CPT_MISMATCH rule — handled by NCCI unbundling rule</text>
+
+<!-- DB lookup arrow -->
+<line x1="690" y1="414" x2="760" y2="414" stroke="#1D9E75" stroke-width="1.2" stroke-dasharray="5 3" marker-end="url(#arr-teal)"/>
+<line x1="760" y1="414" x2="760" y2="570" stroke="#1D9E75" stroke-width="1.2" stroke-dasharray="5 3"/>
+<text x="772" y="496" font-size="11" fill="#1D9E75">DB</text>
+<text x="772" y="510" font-size="11" fill="#1D9E75">lookup</text>
+
+<!-- SQLite DB -->
+<rect x="680" y="570" width="160" height="120" rx="10" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.5"/>
+<text x="760" y="592" text-anchor="middle" font-size="13" font-weight="700" fill="#085041">SQLite DB</text>
+<text x="760" y="610" text-anchor="middle" font-size="11" fill="#0F6E56">ncci_bundles</text>
+<text x="760" y="625" text-anchor="middle" font-size="11" fill="#0F6E56">mue_limits</text>
+<text x="760" y="640" text-anchor="middle" font-size="11" fill="#0F6E56">icd10_codes</text>
+<text x="760" y="655" text-anchor="middle" font-size="11" fill="#0F6E56">icd_cpt_rules</text>
+<text x="760" y="670" text-anchor="middle" font-size="11" fill="#0F6E56">icd9_crosswalk</text>
+<text x="760" y="685" text-anchor="middle" font-size="11" fill="#0F6E56">cpt_rates</text>
+<line x1="760" y1="570" x2="760" y2="458" stroke="#1D9E75" stroke-width="0.8" stroke-dasharray="3 3"/>
+
+<!-- ── DECISION DIAMOND ── -->
+<line x1="430" y1="458" x2="430" y2="500" stroke="#888" stroke-width="1.5" marker-end="url(#arr)"/>
+<polygon points="430,500 490,524 430,548 370,524" fill="#F8FAFC" stroke="#534AB7" stroke-width="1.5"/>
+<text x="430" y="528" text-anchor="middle" font-size="12" font-weight="700" fill="#26215C">risk ≥ 70?</text>
+
+<!-- NO branch → clean output -->
+<line x1="370" y1="524" x2="140" y2="524" stroke="#B4B2A9" stroke-width="1.5" marker-end="url(#arr-gray)"/>
+<text x="254" y="514" font-size="11" fill="#888">no</text>
+<rect x="30" y="548" width="190" height="56" rx="10" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="1.2"/>
+<text x="125" y="572" text-anchor="middle" font-size="13" font-weight="700" fill="#2C2C2A">claims_normalized</text>
+<text x="125" y="590" text-anchor="middle" font-size="11" fill="#5F5E5A">stored, not queued for AI</text>
+
+<!-- YES branch → Layer 4 -->
+<line x1="430" y1="548" x2="430" y2="584" stroke="#534AB7" stroke-width="1.5" marker-end="url(#arr-purple)"/>
+<text x="444" y="570" font-size="11" fill="#534AB7">yes</text>
+
+<!-- ── STEP 5: LAYER 4 ISOLATION FOREST ── -->
+<rect x="230" y="584" width="400" height="56" rx="10" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+<text x="430" y="608" text-anchor="middle" font-size="14" font-weight="700" fill="#26215C">Layer 4 — Isolation Forest</text>
+<text x="430" y="626" text-anchor="middle" font-size="12" fill="#3C3489">unsupervised ML · composite risk score · anomaly flag</text>
+<text x="430" y="638" text-anchor="middle" font-size="11" fill="#3C3489">contamination=0.15 · random_state=42</text>
+
+<line x1="430" y1="640" x2="430" y2="676" stroke="#888" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="444" y="662" font-size="11" fill="#888">AI queue</text>
+
+<!-- ── STEP 6: LAYER 5 GROQ ── -->
+<rect x="170" y="676" width="520" height="80" rx="10" fill="#FAEEDA" stroke="#BA7517" stroke-width="1.5"/>
+<text x="430" y="700" text-anchor="middle" font-size="14" font-weight="700" fill="#412402">Layer 5 — Groq LLM (llama-3.3-70b-versatile)</text>
+<text x="430" y="718" text-anchor="middle" font-size="12" fill="#633806">★ CONFIRMED FRAUD PATTERN block → category anchoring</text>
+<text x="430" y="734" text-anchor="middle" font-size="12" fill="#633806">→ fraud_category · risk_score · clinical narrative · recommendation</text>
+<text x="430" y="748" text-anchor="middle" font-size="11" fill="#854F0B">avg 3.4s/claim · 17/17 completions · 89/100 avg risk</text>
+
+<line x1="430" y1="756" x2="430" y2="786" stroke="#888" stroke-width="1.5" marker-end="url(#arr)"/>
+
+<!-- ── FINAL OUTPUT ── -->
+<rect x="200" y="786" width="460" height="24" rx="8" fill="#FAEEDA" stroke="#BA7517" stroke-width="1.5"/>
+<text x="430" y="802" text-anchor="middle" font-size="12" font-weight="700" fill="#412402">REFER_TO_SIU · fwa_ai_report.csv · 17/17 → 100% referral rate</text>
+
+<!-- Category labels on right -->
+<text x="720" y="802" font-size="11" fill="#633806">UPCODING · UNBUNDLING</text>
+<text x="720" y="815" font-size="11" fill="#633806">ICD_CPT_MISMATCH · MEDICALLY_UNNECESSARY</text>
+
+</svg>
+
+<p class="footer">MediGuard AI · Technical Reference v1.3 · March 25, 2026 · Ram — LTIMindtree Principal Consultant · PAHM Certified</p>
+</body>
+</html>
