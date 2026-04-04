@@ -14,6 +14,12 @@ st.set_page_config(
 st.markdown(
     """
     <style>
+    /* ── Hide Streamlit chrome ── */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    [data-testid="stToolbar"] {visibility: hidden;}
+    [data-testid="stHeader"] {display: none !important;}
+
     /* ── Base ── */
     html, body, [class*="css"] {
         font-family: 'Inter', 'Segoe UI', sans-serif;
@@ -124,30 +130,6 @@ st.markdown(
         margin: 1.4rem 0 .6rem;
         letter-spacing: .02em;
     }
-
-    /* ── Sidebar ── */
-    [data-testid="stSidebar"],
-    [data-testid="stSidebar"] > div {
-        background-color: #EFF6FF !important;
-    }
-    [data-testid="stSidebar"] * {
-        color: #1E3A5F !important;
-    }
-    [data-testid="stSidebar"] [data-baseweb="select"] > div,
-    [data-testid="stSidebar"] [data-baseweb="select"] > div:hover {
-        background-color: #DBEAFE !important;
-        border-color: #93C5FD !important;
-    }
-    [data-baseweb="popover"] [data-baseweb="menu"] {
-        background-color: #DBEAFE !important;
-    }
-    [data-baseweb="popover"] [role="option"] {
-        background-color: #DBEAFE !important;
-        color: #1E3A5F !important;
-    }
-    [data-baseweb="popover"] [role="option"]:hover {
-        background-color: #BFDBFE !important;
-    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -177,33 +159,54 @@ def load_data(path: str = "output/fwa_ai_report.csv") -> pd.DataFrame:
 
 df = load_data()
 
-# ── Sidebar filters ───────────────────────────────────────────────────────────
-with st.sidebar:
-    st.image("https://img.icons8.com/fluency/96/shield-ok.png", width=52)
-    st.markdown("## **MediGuard AI**")
-    st.caption("FWA Intelligence Platform")
-    st.divider()
+# ── Header bar ────────────────────────────────────────────────────────────────
+st.markdown(
+    "<div class='header-bar'>"
+    "<h1>🛡️ MediGuard AI — FWA Claims Dashboard</h1>"
+    "<p>Fraud, Waste &amp; Abuse detection powered by Groq LLM reasoning</p>"
+    "</div>",
+    unsafe_allow_html=True,
+)
 
-    st.markdown("**Filter Claims**")
+# ── KPI area — placeholder rendered here (above filters) ─────────────────────
+# Filled after filters are defined and `filtered` is computed.
+kpi_area = st.container()
 
+# ── Filter row ────────────────────────────────────────────────────────────────
+st.markdown(
+    '<hr style="border:none;border-top:1px solid #DBEAFE;margin:.25rem 0 .75rem;">',
+    unsafe_allow_html=True,
+)
+
+f1, f2, f3, f4, f5 = st.columns(5)
+
+with f1:
     risk_options = ["All"] + sorted(df["risk_tier"].dropna().unique().tolist())
     selected_risk = st.selectbox("Risk Tier", risk_options)
 
+with f2:
     rec_options = ["All"] + sorted(df["ai_recommendation"].dropna().unique().tolist())
     selected_rec = st.selectbox("Recommendation", rec_options)
 
+with f3:
     specialty_options = ["All"] + sorted(df["provider_specialty"].dropna().unique().tolist())
     selected_specialty = st.selectbox("Provider Specialty", specialty_options)
 
+with f4:
     state_options = ["All"] + sorted(df["provider_state"].dropna().unique().tolist())
     selected_state = st.selectbox("Provider State", state_options)
 
-    st.divider()
+with f5:
     min_score, max_score = st.slider(
         "AI Risk Score Range",
         min_value=0, max_value=100,
         value=(0, 100), step=1,
     )
+
+st.markdown(
+    '<hr style="border:none;border-top:1px solid #DBEAFE;margin:.75rem 0 1rem;">',
+    unsafe_allow_html=True,
+)
 
 # ── Apply filters ─────────────────────────────────────────────────────────────
 filtered = df.copy()
@@ -220,57 +223,47 @@ filtered = filtered[
     (filtered["ai_risk_score"] <= max_score)
 ]
 
-# ── Header bar ────────────────────────────────────────────────────────────────
-st.markdown(
-    "<div class='header-bar'>"
-    "<h1>🛡️ MediGuard AI — FWA Claims Dashboard</h1>"
-    "<p>Fraud, Waste &amp; Abuse detection powered by Groq LLM reasoning</p>"
-    "</div>",
-    unsafe_allow_html=True,
-)
+# ── KPI cards — fill the placeholder reserved above the filter row ────────────
+with kpi_area:
+    total_claims = len(filtered)
+    avg_risk = filtered["ai_risk_score"].mean()
+    siu_count = (filtered["ai_recommendation"] == "REFER_TO_SIU").sum()
+    high_count = (filtered["risk_tier"] == "HIGH").sum()
+    total_billed = filtered["billed_amount"].sum()
 
-# ── KPI cards ─────────────────────────────────────────────────────────────────
-total_claims = len(filtered)
-avg_risk = filtered["ai_risk_score"].mean()
-siu_count = (filtered["ai_recommendation"] == "REFER_TO_SIU").sum()
-high_count = (filtered["risk_tier"] == "HIGH").sum()
-total_billed = filtered["billed_amount"].sum()
+    c1, c2, c3, c4, c5 = st.columns(5)
 
-c1, c2, c3, c4, c5 = st.columns(5)
-
-with c1:
-    st.markdown(
-        f'<div class="kpi-card"><div class="kpi-label">Total Flagged Claims</div>'
-        f'<div class="kpi-value">{total_claims:,}</div></div>',
-        unsafe_allow_html=True,
-    )
-with c2:
-    score_class = "danger" if (avg_risk or 0) >= 50 else ""
-    st.markdown(
-        f'<div class="kpi-card"><div class="kpi-label">Avg AI Risk Score</div>'
-        f'<div class="kpi-value {score_class}">{avg_risk:.1f}</div></div>',
-        unsafe_allow_html=True,
-    )
-with c3:
-    st.markdown(
-        f'<div class="kpi-card"><div class="kpi-label">Refer to SIU</div>'
-        f'<div class="kpi-value danger">{siu_count:,}</div></div>',
-        unsafe_allow_html=True,
-    )
-with c4:
-    st.markdown(
-        f'<div class="kpi-card"><div class="kpi-label">High Risk Claims</div>'
-        f'<div class="kpi-value danger">{high_count:,}</div></div>',
-        unsafe_allow_html=True,
-    )
-with c5:
-    st.markdown(
-        f'<div class="kpi-card"><div class="kpi-label">Total Billed Amount</div>'
-        f'<div class="kpi-value navy">${total_billed:,.0f}</div></div>',
-        unsafe_allow_html=True,
-    )
-
-st.markdown("<br>", unsafe_allow_html=True)
+    with c1:
+        st.markdown(
+            f'<div class="kpi-card"><div class="kpi-label">Total Flagged Claims</div>'
+            f'<div class="kpi-value">{total_claims:,}</div></div>',
+            unsafe_allow_html=True,
+        )
+    with c2:
+        score_class = "danger" if (avg_risk or 0) >= 50 else ""
+        st.markdown(
+            f'<div class="kpi-card"><div class="kpi-label">Avg AI Risk Score</div>'
+            f'<div class="kpi-value {score_class}">{avg_risk:.1f}</div></div>',
+            unsafe_allow_html=True,
+        )
+    with c3:
+        st.markdown(
+            f'<div class="kpi-card"><div class="kpi-label">Refer to SIU</div>'
+            f'<div class="kpi-value danger">{siu_count:,}</div></div>',
+            unsafe_allow_html=True,
+        )
+    with c4:
+        st.markdown(
+            f'<div class="kpi-card"><div class="kpi-label">High Risk Claims</div>'
+            f'<div class="kpi-value danger">{high_count:,}</div></div>',
+            unsafe_allow_html=True,
+        )
+    with c5:
+        st.markdown(
+            f'<div class="kpi-card"><div class="kpi-label">Total Billed Amount</div>'
+            f'<div class="kpi-value navy">${total_billed:,.0f}</div></div>',
+            unsafe_allow_html=True,
+        )
 
 # ── Build display dataframe & styler ─────────────────────────────────────────
 TABLE_COLS = [
@@ -322,141 +315,146 @@ styled = (
     ])
 )
 
-# ── Two-column layout: table (left 60%) + narrative (right 40%) ───────────────
-col_table, col_narrative = st.columns([0.6, 0.4], gap="large")
+# ── Claim detail dialog ───────────────────────────────────────────────────────
+@st.dialog("🔍 Claim Investigation", width="large")
+def show_claim_dialog(row):
+    claim_id = row["claim_id"]
+    tier = row.get("risk_tier", "")
+    badge_class = {
+        "HIGH": "badge-high", "MEDIUM": "badge-medium", "LOW": "badge-low"
+    }.get(tier, "")
+    rec = str(row.get("ai_recommendation", ""))
+    rec_badge = "badge-siu" if rec == "REFER_TO_SIU" else "badge-low"
+    risk_val_color = {
+        "HIGH": "#DC2626", "MEDIUM": "#D97706", "LOW": "#16A34A"
+    }.get(tier, "#2563EB")
 
-with col_table:
-    st.markdown('<div class="section-header">Flagged Claims</div>', unsafe_allow_html=True)
-    event = st.dataframe(
-        styled,
-        use_container_width=True,
-        hide_index=True,
-        on_select="rerun",
-        selection_mode="single-row",
-        height=560,
-        column_config={
-            "claim_id":           st.column_config.TextColumn("Claim ID"),
-            "patient_id":         st.column_config.TextColumn("Patient ID"),
-            "provider_name":      st.column_config.TextColumn("Provider"),
-            "provider_specialty": st.column_config.TextColumn("Specialty"),
-            "provider_state":     st.column_config.TextColumn("State"),
-            "date_of_service":    st.column_config.TextColumn("Date of Service"),
-            "cpt_code":           st.column_config.TextColumn("CPT"),
-            "cpt_description":    st.column_config.TextColumn("CPT Description"),
-            "billed_amount":      st.column_config.TextColumn("Billed"),
-            "ai_risk_score":      st.column_config.ProgressColumn(
-                "Risk Score", min_value=0, max_value=100, format="%d",
-            ),
-            "risk_tier":          st.column_config.TextColumn("Risk Tier"),
-            "ai_fraud_category":  st.column_config.TextColumn("Fraud Category"),
-            "ai_recommendation":  st.column_config.TextColumn("Recommendation"),
-        },
+    st.markdown(
+        f'<div style="font-size:.8rem;color:#64748B;margin-bottom:1rem;">'
+        f'Claim ID: <strong style="color:#1E3A5F;">{claim_id}</strong></div>',
+        unsafe_allow_html=True,
     )
 
-# ── Right panel: AI Narrative Viewer ─────────────────────────────────────────
-with col_narrative:
-    st.markdown('<div class="section-header">AI Narrative Viewer</div>', unsafe_allow_html=True)
-
-    selected_rows = event.selection.rows if event.selection else []
-
-    if not selected_rows:
-        st.info("Select a row in the claims table to view the Groq AI explanation.")
-    else:
-        idx = selected_rows[0]
-        row = filtered.iloc[idx]
-
-        tier = row.get("risk_tier", "")
-        badge_class = {
-            "HIGH": "badge-high", "MEDIUM": "badge-medium", "LOW": "badge-low"
-        }.get(tier, "")
-        rec = str(row.get("ai_recommendation", ""))
-        rec_badge = "badge-siu" if rec == "REFER_TO_SIU" else "badge-low"
-        risk_val_color = {
-            "HIGH": "#DC2626", "MEDIUM": "#D97706", "LOW": "#16A34A"
-        }.get(tier, "#2563EB")
-
-        # Meta cards row
-        m1, m2, m3 = st.columns(3)
-        with m1:
-            st.markdown(
-                f'<div class="right-panel-card"><div class="kpi-label">Risk Score</div>'
-                f'<div style="font-size:1.5rem;font-weight:800;color:{risk_val_color};line-height:1;">'
-                f'{int(row["ai_risk_score"]) if pd.notna(row["ai_risk_score"]) else "—"}</div>'
-                f'<span class="badge {badge_class}">{tier}</span></div>',
-                unsafe_allow_html=True,
-            )
-        with m2:
-            st.markdown(
-                f'<div class="right-panel-card"><div class="kpi-label" style="font-size:.6rem;letter-spacing:.05em;">Recommendation</div>'
-                f'<div style="margin-top:.3rem;"><span class="badge {rec_badge}">{rec}</span></div></div>',
-                unsafe_allow_html=True,
-            )
-        with m3:
-            st.markdown(
-                f'<div class="right-panel-card"><div class="kpi-label">Claim ID</div>'
-                f'<div style="font-weight:700;color:#1E3A5F;font-size:.88rem;margin-top:.2rem;">'
-                f'{row["claim_id"]}</div></div>',
-                unsafe_allow_html=True,
-            )
-
-        # Provider info
+    # ── Top 3 cards: Risk Score, Recommendation, Fraud Category ──
+    m1, m2, m3 = st.columns(3)
+    with m1:
+        st.markdown(
+            f'<div class="right-panel-card"><div class="kpi-label">Risk Score</div>'
+            f'<div style="font-size:1.5rem;font-weight:800;color:{risk_val_color};line-height:1;">'
+            f'{int(row["ai_risk_score"]) if pd.notna(row["ai_risk_score"]) else "—"}</div>'
+            f'<span class="badge {badge_class}">{tier}</span></div>',
+            unsafe_allow_html=True,
+        )
+    with m2:
         st.markdown(
             f'<div class="right-panel-card">'
-            f'<div class="kpi-label">Provider</div>'
-            f'<div style="font-weight:600;font-size:.88rem;color:#1E293B;">{row.get("provider_name","—")}</div>'
-            f'<div style="font-size:.75rem;color:#64748B;">'
-            f'{row.get("provider_specialty","—")} &middot; {row.get("provider_state","—")}</div>'
-            f'<div style="font-size:.75rem;color:#64748B;margin-top:.2rem;">'
-            f'Fraud Category: <strong>{row.get("ai_fraud_category","—")}</strong></div>'
-            f'</div>',
+            f'<div class="kpi-label" style="font-size:.6rem;letter-spacing:.05em;">Recommendation</div>'
+            f'<div style="margin-top:.3rem;"><span class="badge {rec_badge}">{rec}</span></div></div>',
             unsafe_allow_html=True,
         )
-
-        # Red flags
-        raw_flags = str(row.get("ai_red_flags", ""))
-        flags = [f.strip() for f in raw_flags.split("|") if f.strip() and f.strip() != "nan"]
-        flags_html = "".join(f'<span class="red-flag-chip">{f}</span>' for f in flags)
-        if flags_html:
-            st.markdown(
-                f'<div class="right-panel-card">'
-                f'<div class="kpi-label" style="margin-bottom:.4rem;">Red Flags</div>'
-                f'{flags_html}</div>',
-                unsafe_allow_html=True,
-            )
-
-        # Narrative
-        narrative = str(row.get("ai_narrative", "No narrative available."))
-        if narrative == "nan":
-            narrative = "No narrative available."
+    with m3:
         st.markdown(
-            f'<div class="narrative-box">'
-            f'<h4>🤖 Groq AI Analysis</h4>'
-            f'<p class="narrative-body">{narrative}</p>'
-            f'</div>',
+            f'<div class="right-panel-card"><div class="kpi-label">Fraud Category</div>'
+            f'<div style="font-weight:700;color:#1E3A5F;font-size:.85rem;margin-top:.25rem;">'
+            f'{row.get("ai_fraud_category","—")}</div></div>',
             unsafe_allow_html=True,
         )
 
-        # Rule engine flags
-        raw_rule_flags = row.get("rule_flags", "[]")
-        try:
-            rule_flags = json.loads(str(raw_rule_flags)) if raw_rule_flags and str(raw_rule_flags) != "nan" else []
-        except (json.JSONDecodeError, ValueError):
-            rule_flags = []
+    # ── Provider info ──
+    st.markdown(
+        f'<div class="right-panel-card">'
+        f'<div class="kpi-label">Provider</div>'
+        f'<div style="font-weight:600;font-size:.88rem;color:#1E293B;">{row.get("provider_name","—")}</div>'
+        f'<div style="font-size:.75rem;color:#64748B;">'
+        f'{row.get("provider_specialty","—")} &middot; {row.get("provider_state","—")}</div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
 
-        if rule_flags:
-            with st.expander("Rule Engine Flags Detail"):
-                for flag in rule_flags:
-                    sev = flag.get("severity", "LOW")
-                    sev_color = {"HIGH": "#DC2626", "MEDIUM": "#D97706", "LOW": "#16A34A"}.get(sev, "#64748B")
-                    st.markdown(
-                        f'<div style="border:1px solid #DBEAFE;border-left:4px solid {sev_color};'
-                        f'border-radius:6px;padding:.75rem 1rem;margin-bottom:.5rem;background:#fff;">'
-                        f'<strong style="color:{sev_color};">[{sev}]</strong>'
-                        f'<strong style="color:#1E293B;"> {flag.get("rule","")}</strong><br>'
-                        f'<span style="color:#475569;font-size:.85rem;">{flag.get("detail","")}</span>'
-                        f'</div>',
-                        unsafe_allow_html=True,
-                    )
+    # ── Red flags ──
+    raw_flags = str(row.get("ai_red_flags", ""))
+    flags = [f.strip() for f in raw_flags.split("|") if f.strip() and f.strip() != "nan"]
+    flags_html = "".join(f'<span class="red-flag-chip">{f}</span>' for f in flags)
+    if flags_html:
+        st.markdown(
+            f'<div class="right-panel-card">'
+            f'<div class="kpi-label" style="margin-bottom:.4rem;">Red Flags</div>'
+            f'{flags_html}</div>',
+            unsafe_allow_html=True,
+        )
+
+    # ── Groq AI narrative ──
+    narrative = str(row.get("ai_narrative", "No narrative available."))
+    if narrative == "nan":
+        narrative = "No narrative available."
+    st.markdown(
+        f'<div class="narrative-box">'
+        f'<h4>🤖 Groq AI Analysis</h4>'
+        f'<p class="narrative-body">{narrative}</p>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
+
+    # ── Rule engine flags (expandable) ──
+    raw_rule_flags = row.get("rule_flags", "[]")
+    try:
+        rule_flags = json.loads(str(raw_rule_flags)) if raw_rule_flags and str(raw_rule_flags) != "nan" else []
+    except (json.JSONDecodeError, ValueError):
+        rule_flags = []
+
+    if rule_flags:
+        with st.expander("Rule Engine Flags Detail"):
+            for flag in rule_flags:
+                sev = flag.get("severity", "LOW")
+                sev_color = {"HIGH": "#DC2626", "MEDIUM": "#D97706", "LOW": "#16A34A"}.get(sev, "#64748B")
+                st.markdown(
+                    f'<div style="border:1px solid #DBEAFE;border-left:4px solid {sev_color};'
+                    f'border-radius:6px;padding:.75rem 1rem;margin-bottom:.5rem;background:#fff;">'
+                    f'<strong style="color:{sev_color};">[{sev}]</strong>'
+                    f'<strong style="color:#1E293B;"> {flag.get("rule","")}</strong><br>'
+                    f'<span style="color:#475569;font-size:.85rem;">{flag.get("detail","")}</span>'
+                    f'</div>',
+                    unsafe_allow_html=True,
+                )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.button("Close", type="secondary", use_container_width=True):
+        st.rerun()
+
+
+# ── Full-width claims table ───────────────────────────────────────────────────
+st.markdown('<div class="section-header">Flagged Claims</div>', unsafe_allow_html=True)
+event = st.dataframe(
+    styled,
+    use_container_width=True,
+    hide_index=True,
+    on_select="rerun",
+    selection_mode="single-row",
+    height=560,
+    column_config={
+        "claim_id":           st.column_config.TextColumn("Claim ID"),
+        "patient_id":         st.column_config.TextColumn("Patient ID"),
+        "provider_name":      st.column_config.TextColumn("Provider"),
+        "provider_specialty": st.column_config.TextColumn("Specialty"),
+        "provider_state":     st.column_config.TextColumn("State"),
+        "date_of_service":    st.column_config.TextColumn("Date of Service"),
+        "cpt_code":           st.column_config.TextColumn("CPT"),
+        "cpt_description":    st.column_config.TextColumn("CPT Description"),
+        "billed_amount":      st.column_config.TextColumn("Billed"),
+        "ai_risk_score":      st.column_config.ProgressColumn(
+            "Risk Score", min_value=0, max_value=100, format="%d",
+        ),
+        "risk_tier":          st.column_config.TextColumn("Risk Tier"),
+        "ai_fraud_category":  st.column_config.TextColumn("Fraud Category"),
+        "ai_recommendation":  st.column_config.TextColumn("Recommendation"),
+    },
+)
+
+# ── Open dialog when a row is selected ───────────────────────────────────────
+selected_rows = event.selection.rows if event.selection else []
+if selected_rows:
+    row = filtered.iloc[selected_rows[0]]
+    show_claim_dialog(row)
 
 # ── Footer ────────────────────────────────────────────────────────────────────
 st.divider()
