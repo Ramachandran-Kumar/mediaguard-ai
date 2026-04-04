@@ -77,11 +77,16 @@ FINAL SOLUTION — Three-layer POS resolution (implemented below):
     a full 10,000-row lookup table.
     Not perfect but clinically sound for ~90% of claims.
 
-  LAYER 3 — V2 Roadmap (Month 2, RAG Layer):
-    When we add ChromaDB, we embed the full CMS POS-CPT reference
-    table as a vector store. The LLM retrieves the exact correct
-    POS for any CPT code, including codes added after this file
-    was written. This eliminates the CPT range inference entirely.
+  LAYER 2 — ChromaDB RAG (semantic vector search):
+    ChromaDB vector store over all CMS CPT descriptions, embedded
+    with all-MiniLM-L6-v2 (local). Exact ID lookup for known CPT
+    codes; semantic search for future/unknown codes. Eliminates
+    brittle range buckets and scales to all 10,000+ CPT codes.
+    Store lives at data/chroma_pos_store/ (built by pos_rag_store.py).
+
+  LAYER 3 — CPT numeric range inference (last resort):
+    Original fallback, kept for resilience. Fires only when ChromaDB
+    is unavailable (store not built, import error, etc.).
 
 WHY THIS THREE-LAYER APPROACH IS CORRECT ARCHITECTURE:
   - Layer 1 handles the happy path (well-formed FHIR data)
@@ -307,6 +312,35 @@ def parse_diagnosis(diagnoses):
     return icd_code, icd_desc
 
 
+# ── LAYER 2 → LAYER 3: RAG THEN RANGE FALLBACK ───────────────────────────────
+
+def _resolve_pos_layer2_layer3(cpt_code: str, context: str = "") -> tuple[int, str, str]:
+    """
+    Layer 2: query ChromaDB RAG store for expected POS.
+    Layer 3: fall back to CPT numeric range inference if RAG is unavailable.
+
+    Returns: (pos_code, pos_description, pos_source_label)
+    """
+    # ── Layer 2: ChromaDB semantic search ──
+    try:
+        from pos_rag_store import get_pos_store, RAG_DISTANCE_THRESHOLD
+        pos_code, pos_desc, distance = get_pos_store().query_pos_for_cpt(cpt_code)
+        if distance < RAG_DISTANCE_THRESHOLD:
+            label = f"layer2-rag (dist={distance:.3f})"
+            if context:
+                label += f" [{context}]"
+            return pos_code, pos_desc, label
+    except Exception:
+        pass  # RAG unavailable — fall through to range inference
+
+    # ── Layer 3: CPT numeric range inference (last resort) ──
+    pos_code, pos_desc, reason = infer_pos_from_cpt(cpt_code)
+    label = f"layer3-range-fallback ({reason})"
+    if context:
+        label += f" [{context}]"
+    return pos_code, pos_desc, label
+
+
 # ── LAYER 1: PARSE POS FROM FHIR LOCATION FIELD ──────────────────────────────
 
 def parse_pos_from_fhir(items, primary_cpt):
@@ -322,23 +356,24 @@ def parse_pos_from_fhir(items, primary_cpt):
         - Real CMS BCDA API responses
         - Any FHIR-compliant payer API
 
-    Layer 2 (FALLBACK — called if Layer 1 returns nothing):
-      Infer POS from CPT code numeric range via infer_pos_from_cpt().
-      Handles: v1 synthetic data, partial FHIR implementations.
-      Scalable to all 10,000+ CPT codes via range logic.
+    Layer 2 (ChromaDB RAG — called if Layer 1 returns nothing):
+      Semantic vector search over all CMS CPT descriptions embedded
+      with all-MiniLM-L6-v2. Exact ID lookup for known CPT codes,
+      semantic nearest-neighbor for unknown/future codes.
+      Handles: v1 synthetic data, partial FHIR implementations,
+      any CPT code including those not yet in the range buckets.
 
-    Layer 3 (ROADMAP — Month 2 RAG layer):
-      ChromaDB lookup of full CMS POS-CPT reference table.
-      Will replace Layer 2 entirely.
+    Layer 3 (CPT numeric range inference — last resort):
+      Fires only when ChromaDB is unavailable (store not built,
+      import error). Kept for resilience / offline mode.
 
     Returns: (pos_code: int, pos_description: str, pos_source: str)
       pos_source documents which layer resolved the POS — useful for
       debugging and for measuring how often each layer fires.
     """
     if not items:
-        # No items at all — use CPT fallback with empty string
-        pos_code, pos_desc, reason = infer_pos_from_cpt(primary_cpt)
-        return pos_code, pos_desc, f"layer2-fallback ({reason})"
+        # No items at all — go straight to RAG/range fallback chain
+        return _resolve_pos_layer2_layer3(primary_cpt, context="no-items")
 
     # ── Layer 1: FHIR location field ──
     first_item = items[0]
@@ -361,10 +396,9 @@ def parse_pos_from_fhir(items, primary_cpt):
             except ValueError:
                 pass  # Fall through to Layer 2
 
-    # ── Layer 2: CPT range inference ──
-    # Location field absent or unparseable — infer from CPT range
-    pos_code, pos_desc, reason = infer_pos_from_cpt(primary_cpt)
-    return pos_code, pos_desc, f"layer2-cpt-range ({reason})"
+    # ── Layer 2 → Layer 3: RAG then range inference ──
+    # Location field absent or unparseable
+    return _resolve_pos_layer2_layer3(primary_cpt, context="no-location")
 
 
 # ── MAIN CONVERTER ───────────────────────────────────────────────────────────
@@ -553,7 +587,8 @@ def run_converter(source=None):
     rows           = []
     errors         = []
     layer1_count   = 0   # resolved via FHIR location field
-    layer2_count   = 0   # resolved via CPT range inference
+    layer2_count   = 0   # resolved via ChromaDB RAG
+    layer3_count   = 0   # resolved via CPT range inference (last resort)
 
     for i, eob in enumerate(eobs):
         claim_id = eob.get("id", f"EOB-{i+1}")
@@ -562,10 +597,13 @@ def run_converter(source=None):
             rows.append(row)
 
             # Track which POS layer fired
-            if "layer1" in row["pos_source"]:
+            src = row["pos_source"]
+            if "layer1" in src:
                 layer1_count += 1
-            else:
+            elif "layer2" in src:
                 layer2_count += 1
+            else:
+                layer3_count += 1
 
             flag = "✅" if row["conversion_notes"] == "clean" else "⚠️ "
             print(f"    [{i+1:03}/{len(eobs)}] {claim_id:<32} "
@@ -596,8 +634,8 @@ def run_converter(source=None):
     print()
     print("  POS Resolution breakdown:")
     print(f"    Layer 1 (FHIR location field) : {layer1_count} claims  ← ideal path")
-    print(f"    Layer 2 (CPT range inference) : {layer2_count} claims  ← fallback")
-    print(f"    Layer 3 (RAG — Month 2)       : not yet implemented")
+    print(f"    Layer 2 (ChromaDB RAG)        : {layer2_count} claims  ← vector fallback")
+    print(f"    Layer 3 (CPT range inference) : {layer3_count} claims  ← last resort")
     print()
     print(f"  Output → {OUTPUT_CSV}")
     print()
