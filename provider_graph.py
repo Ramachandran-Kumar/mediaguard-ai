@@ -25,7 +25,7 @@ from collections import Counter
 # ── CONFIG ────────────────────────────────────────────────────────────────────
 
 INPUT_FILE  = "output/claims_flagged.csv"
-OUTPUT_FILE = "output/provider_graph.png"
+OUTPUT_FILE = "assets/provider_graph.png"
 
 FRAUD_COLORS = {
     "UPCODING":             "#4C72B0",   # blue
