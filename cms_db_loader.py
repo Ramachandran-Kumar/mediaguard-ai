@@ -275,17 +275,19 @@ def get_icd_description(icd10_code):
 
 
 def get_cpt_avg_cost(cpt_code):
-    """Look up CPT average cost from DB. Returns 0.0 if not found."""
+    """Look up CPT average cost from DB. Falls back to _FALLBACK_CPT, then 0.0."""
     conn = _get_conn()
     if not conn:
-        return 0.0
+        return _FALLBACK_CPT.get(cpt_code, {}).get("avg_cost", 0.0)
     try:
         row = conn.execute(
             "SELECT avg_cost FROM cpt_rates WHERE cpt_code = ?", (cpt_code,)
         ).fetchone()
-        return row["avg_cost"] if row else 0.0
+        if row and row["avg_cost"]:
+            return row["avg_cost"]
+        return _FALLBACK_CPT.get(cpt_code, {}).get("avg_cost", 0.0)
     except Exception:
-        return 0.0
+        return _FALLBACK_CPT.get(cpt_code, {}).get("avg_cost", 0.0)
     finally:
         conn.close()
 

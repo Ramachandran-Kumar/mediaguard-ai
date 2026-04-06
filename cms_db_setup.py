@@ -50,11 +50,12 @@ import openpyxl
 _DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 DB_PATH   = os.path.join(_DATA_DIR, "mediaguard_reference.db")
 
-NCCI_FILE  = os.path.join(_DATA_DIR, "ccipra-v321r0-f1.xlsx")
-MUE_FILE   = os.path.join(_DATA_DIR, "MCR_MUE_PractitionerServices_Eff_04-01-2026.xlsx")
-ICD10_FILE = os.path.join(_DATA_DIR, "Code Descriptions", "icd10cm_codes_2026")
-PFS_FILE   = os.path.join(_DATA_DIR, "PFREV26B.txt")
-GEM_FILE   = os.path.join(_DATA_DIR, "2018_I9gem.txt")
+NCCI_FILE    = os.path.join(_DATA_DIR, "ccipra-v321r0-f1.xlsx")
+MUE_FILE     = os.path.join(_DATA_DIR, "MCR_MUE_PractitionerServices_Eff_04-01-2026.xlsx")
+ICD10_FILE   = os.path.join(_DATA_DIR, "Code Descriptions", "icd10cm_codes_2026")
+PFS_FILE     = os.path.join(_DATA_DIR, "PFREV26B.txt")
+PPRRVU_FILE  = os.path.join(_DATA_DIR, "PPRRVU2026_Jan_nonQPP.csv")
+GEM_FILE     = os.path.join(_DATA_DIR, "2018_I9gem.txt")
 
 
 # ── DATABASE SETUP ────────────────────────────────────────────────────────────
@@ -325,9 +326,10 @@ def load_pfs(conn):
         "00100": ("Anesthesia for salivary gland surgery",  ["Anesthesiology"]),
     }
 
-    rows    = []
-    seen    = set()
-    skipped = 0
+    # Accumulate all locality rates per CPT, then average — this file has no
+    # national (00000) rows; it is locality-only, so averaging gives the
+    # national representative PFS benchmark rate.
+    rate_buckets: dict[str, list[float]] = {}
 
     with open(PFS_FILE, "r", encoding="utf-8", errors="ignore") as f:
         for line in f:
@@ -336,32 +338,31 @@ def load_pfs(conn):
                 continue
             parts = [p.strip().strip('"') for p in line.split(",")]
             if len(parts) < 6:
-                skipped += 1
                 continue
 
             cpt_code = parts[3].strip().zfill(5) if parts[3].strip() else ""
             modifier = parts[4].strip()
             amount   = parts[5].strip()
-            # locality = parts[2].strip()
 
-            # if locality not in ("00000", "0000000000", ""):
-            #     skipped += 1
-            #     continue
-            if modifier and modifier not in ("", " "):
-                skipped += 1
+            if not cpt_code:
                 continue
-            if not cpt_code or cpt_code in seen:
-                skipped += 1
+            # Skip modifier rows — only unmodified (blank) rates are base PFS rates
+            if modifier and modifier.strip():
                 continue
 
             try:
-                avg_cost = float(amount.lstrip("0") or "0")
+                rate = float(amount.lstrip("0") or "0")
             except (ValueError, TypeError):
-                avg_cost = 0.0
+                continue
 
-            desc, specialty = known_descriptions.get(cpt_code, ("", []))
-            rows.append((cpt_code, round(avg_cost, 2), desc, ",".join(specialty)))
-            seen.add(cpt_code)
+            if rate > 0:
+                rate_buckets.setdefault(cpt_code, []).append(rate)
+
+    rows = []
+    for cpt_code, rates in rate_buckets.items():
+        avg_cost = round(sum(rates) / len(rates), 2)
+        desc, specialty = known_descriptions.get(cpt_code, ("", []))
+        rows.append((cpt_code, avg_cost, desc, ",".join(specialty)))
 
     c = conn.cursor()
     c.execute("DELETE FROM cpt_rates")
@@ -376,6 +377,117 @@ def load_pfs(conn):
     conn.commit()
 
     print(f"  [PFS]  ✅ {len(rows):,} CPT rates loaded ({time.time()-t:.1f}s)")
+    return len(rows)
+
+
+# ── LOAD PFS FROM PPRRVU (full 10,000+ code RVU file) ────────────────────────
+
+def load_pfs_from_pprrvu(conn):
+    """
+    Load CMS Physician Fee Schedule rates from PPRRVU2026_Jan_nonQPP.csv.
+
+    Column positions (0-based, after skipping the 9-row header block):
+      0  = HCPCS code
+      2  = Description
+      3  = Status code  (only 'A' = active, separately payable)
+      5  = Work RVU
+      6  = Non-Facility PE RVU
+      10 = Malpractice (MP) RVU
+      25 = Conversion Factor
+
+    Payment formula:
+      payment = (Work_RVU + NonFac_PE_RVU + MP_RVU) × Conversion_Factor
+    """
+    if not os.path.exists(PPRRVU_FILE):
+        print(f"  ⚠️  PPRRVU file not found — skipping ({PPRRVU_FILE})")
+        return 0
+
+    print(f"  [PFS2] Loading from {os.path.basename(PPRRVU_FILE)}...")
+    t = time.time()
+
+    rows    = []
+    skipped = 0
+
+    with open(PPRRVU_FILE, "r", encoding="utf-8", errors="ignore") as f:
+        for line_num, line in enumerate(f):
+            # Skip the 10-row header block (rows 0-9)
+            if line_num < 10:
+                continue
+
+            parts = [p.strip().strip('"') for p in line.split(",")]
+
+            # Need at least 26 columns to reach the conversion factor
+            if len(parts) < 26:
+                skipped += 1
+                continue
+
+            cpt_code    = parts[0].strip().zfill(5) if parts[0].strip() else ""
+            description = parts[2].strip()
+            status_code = parts[3].strip()
+
+            # Only load Status A = active, separately payable procedures
+            if status_code != "A":
+                skipped += 1
+                continue
+
+            if not cpt_code:
+                skipped += 1
+                continue
+
+            # Parse RVU fields — skip rows with "NA", blank, or non-numeric values
+            try:
+                work_rvu  = parts[5].strip()
+                nonfac_pe = parts[6].strip()
+                mp_rvu    = parts[10].strip()
+                cf        = parts[25].strip()
+
+                if any(v in ("", "NA", "N/A") for v in (work_rvu, nonfac_pe, mp_rvu, cf)):
+                    skipped += 1
+                    continue
+
+                work_rvu  = float(work_rvu)
+                nonfac_pe = float(nonfac_pe)
+                mp_rvu    = float(mp_rvu)
+                cf        = float(cf)
+            except (ValueError, TypeError):
+                skipped += 1
+                continue
+
+            if cf == 0:
+                skipped += 1
+                continue
+
+            payment = round((work_rvu + nonfac_pe + mp_rvu) * cf, 2)
+
+            rows.append((cpt_code, payment, description, ""))
+
+    c = conn.cursor()
+    c.execute("DELETE FROM cpt_rates")
+    c.executemany(
+        "INSERT OR REPLACE INTO cpt_rates (cpt_code, avg_cost, description, specialty) VALUES (?,?,?,?)",
+        rows
+    )
+    c.execute(
+        "INSERT OR REPLACE INTO db_metadata VALUES (?,?,?,?)",
+        ("cpt_rates", time.strftime("%Y-%m-%d %H:%M:%S"), len(rows), os.path.basename(PPRRVU_FILE))
+    )
+    conn.commit()
+
+    print(f"  [PFS2] ✅ {len(rows):,} CPT rates loaded, {skipped:,} skipped ({time.time()-t:.1f}s)")
+
+    # Spot-check key CPT codes
+    spot_codes = ("99215", "27447", "36415", "00100")
+    print(f"  [PFS2] Spot check:")
+    for code in spot_codes:
+        row = conn.execute(
+            "SELECT cpt_code, avg_cost, description FROM cpt_rates WHERE cpt_code = ?",
+            (code.zfill(5),)
+        ).fetchone()
+        if row:
+            print(f"           CPT {row[0]}  ${row[1]:>10,.2f}  {row[2]}")
+        else:
+            print(f"           CPT {code}  NOT FOUND")
+
     return len(rows)
 
 
@@ -592,7 +704,7 @@ def build_database():
     n_ncci  = load_ncci(conn)
     n_mue   = load_mue(conn)
     n_icd10 = load_icd10(conn)
-    n_pfs   = load_pfs(conn)
+    n_pfs   = load_pfs_from_pprrvu(conn)
     n_gem   = load_gem(conn)
     n_rules = load_icd_cpt_rules(conn)
 

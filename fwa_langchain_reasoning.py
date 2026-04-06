@@ -37,6 +37,7 @@ import time
 import pandas as pd
 from typing import Optional
 from dataclasses import dataclass, field, asdict
+from cms_db_loader import get_cpt_avg_cost
 
 # ──────────────────────────────────────────────
 # CONFIG — Change these for your setup
@@ -98,6 +99,7 @@ class ClaimRecord:
     weekend_billing_rate: float = 0.0
     provider_vs_specialty_ratio: float = 1.0
     fraud_label: str = "UNKNOWN"
+    pfs_benchmark_rate: float = 0.0
 
 
 @dataclass
@@ -248,12 +250,20 @@ NPI              : {claim.provider_npi}
 Procedure (CPT)  : {claim.cpt_code} — {claim.cpt_description}
 Diagnosis (ICD)  : {claim.icd_primary} — {claim.icd_description}
 Billed Amount    : ${claim.billed_amount:,.2f}
+PFS Benchmark    : ${claim.pfs_benchmark_rate:.2f}
+Est. Overpayment : ${max(0, claim.billed_amount - claim.pfs_benchmark_rate):,.2f}
 Units Billed     : {claim.units}
 
 ═══ PROVIDER BENCHMARKS ═══
 % of E&M visits billed as 99215 (highest complexity): {claim.pct_99215:.0f}%  (national avg: ~18%)
 Weekend billing rate                                 : {claim.weekend_billing_rate:.1f}%  (national avg: ~15%)
 Avg cost vs specialty peers                          : {claim.provider_vs_specialty_ratio:.2f}x
+
+═══ REQUIRED OUTPUT SECTION ═══
+After your JSON response, you MUST include a "Recommended Actions" section with exactly these three items:
+  - Overpayment Estimate: state the dollar amount overbilled vs the PFS benchmark rate above
+  - Records to Request: list the specific medical records, billing logs, or documentation the SIU needs
+  - Next Investigation Step: one specific actionable next step for the SIU investigator
 
 Now provide your FWA assessment as JSON. Use the rule engine findings above as your primary evidence."""
 
@@ -827,7 +837,8 @@ def load_claims_for_ai(filepath: str, max_claims: int, min_risk: float) -> tuple
             pct_99215=float(row.get("pct_99215", 0)),
             weekend_billing_rate=float(row.get("weekend_billing_rate", 0)),
             provider_vs_specialty_ratio=float(row.get("provider_vs_specialty_ratio", 1)),
-            fraud_label=str(row.get("fraud_label", "UNKNOWN"))
+            fraud_label=str(row.get("fraud_label", "UNKNOWN")),
+            pfs_benchmark_rate=get_cpt_avg_cost(str(row.get("cpt_code", "")))
         ))
 
     return df_filtered, claims
