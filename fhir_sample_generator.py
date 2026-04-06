@@ -1,8 +1,8 @@
 """
 ╔══════════════════════════════════════════════════════════════╗
-║  MEDIAGUARD AI — FHIR Sample Data Generator  (v2)           ║
-║  Generates realistic FHIR R4 ExplanationOfBenefit (EOB)     ║
-║  resources that mirror CMS BCDA API output                  ║
+║  MEDIAGUARD AI — FHIR Sample Data Generator  (v2)            ║
+║  Generates realistic FHIR R4 ExplanationOfBenefit (EOB)      ║
+║  resources that mirror CMS BCDA API output                   ║
 ╚══════════════════════════════════════════════════════════════╝
 
 PURPOSE:
