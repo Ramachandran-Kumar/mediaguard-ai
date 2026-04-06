@@ -141,9 +141,21 @@ def build_graph(nodes: dict, edges: list[dict]) -> nx.Graph:
 
 # ── VISUALIZATION ─────────────────────────────────────────────────────────────
 
-def draw_graph(G: nx.Graph, output_path: str):
-    fig, ax = plt.subplots(figsize=(16, 11))
+def make_figure(G: nx.Graph) -> plt.Figure:
+    """
+    Build and return the matplotlib Figure for the provider graph.
+    Called by draw_graph() (save to file) and by the Streamlit dashboard
+    (display inline via st.pyplot).
+    """
+    fig, ax = plt.subplots(figsize=(10, 6))
     fig.patch.set_facecolor("white")
+    _render_graph_onto(G, fig, ax)
+    plt.tight_layout()
+    return fig
+
+
+def _render_graph_onto(G: nx.Graph, fig: plt.Figure, ax):
+    """Core drawing logic — shared by make_figure() and draw_graph()."""
     ax.set_facecolor("#F8F9FA")
 
     # Layout — Kamada-Kawai keeps high-weight edges short (clusters emerge)
@@ -253,9 +265,14 @@ def draw_graph(G: nx.Graph, output_path: str):
 
     ax.axis("off")
     plt.tight_layout(pad=1.5)
+
+
+def draw_graph(G: nx.Graph, output_path: str):
+    """Build the figure, save to disk, and close."""
+    fig = make_figure(G)
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    plt.savefig(output_path, dpi=150, bbox_inches="tight", facecolor="white")
-    plt.close()
+    fig.savefig(output_path, dpi=150, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
     print(f"\n  Graph saved → {output_path}")
 
 
@@ -323,83 +340,103 @@ def print_summary(G: nx.Graph, edges: list[dict]):
     print("\n" + "═" * 65)
 
 
+# ── CLUSTER ALERTS (shared by dashboard and CLI) ─────────────────────────────
+
+def get_cluster_alerts(G: nx.Graph) -> list[dict]:
+    """
+    Returns a list of alert dicts for every connected cluster with >1 provider.
+    Used by the Streamlit dashboard and by print_scheme_narratives().
+    """
+    components  = sorted(nx.connected_components(G), key=len, reverse=True)
+    alerts      = []
+
+    for cluster in components:
+        if len(cluster) <= 1:
+            continue
+
+        members        = list(cluster)
+        states         = sorted({G.nodes[n]["state"] for n in members})
+        fraud_counts   = Counter(G.nodes[n]["dominant_fraud"] for n in members)
+        dominant_fraud = fraud_counts.most_common(1)[0][0]
+        total_claims   = sum(G.nodes[n]["claim_count"] for n in members)
+        avg_risk       = sum(G.nodes[n]["avg_risk_score"] for n in members) / len(members)
+        provider_names = sorted(G.nodes[n]["name"] for n in members)
+
+        shared_cpts: set = set()
+        shared_fraud_labels: set = set()
+        for u, v in G.edges(members):
+            if v in cluster:
+                shared_cpts         |= G[u][v].get("shared_cpts", set())
+                shared_fraud_labels |= G[u][v].get("shared_fraud", set())
+        shared_cpts.discard("")
+
+        if avg_risk >= 80:
+            action = "Joint SIU Investigation — refer to OIG"
+        elif avg_risk >= 60:
+            action = "Joint SIU Investigation with prepayment audit"
+        else:
+            action = "Enhanced monitoring — flag for coordinated review"
+
+        alerts.append({
+            "provider_count":      len(members),
+            "state_count":         len(states),
+            "states":              states,
+            "dominant_fraud":      dominant_fraud,
+            "shared_fraud_labels": shared_fraud_labels,
+            "shared_cpts":         shared_cpts,
+            "total_claims":        total_claims,
+            "avg_risk":            round(avg_risk, 1),
+            "provider_names":      provider_names,
+            "action":              action,
+        })
+
+    return alerts
+
+
 # ── SCHEME NARRATIVE ──────────────────────────────────────────────────────────
 
 def print_scheme_narratives(G: nx.Graph):
     """
-    For each connected cluster with more than one provider, generates an
-    investigator-language scheme alert describing the coordinated pattern,
-    shared billing codes, aggregate exposure, and recommended action.
+    Print investigator-language scheme alerts for each multi-provider cluster.
+    Uses get_cluster_alerts() so logic is shared with the Streamlit dashboard.
     """
-    components = sorted(nx.connected_components(G), key=len, reverse=True)
-    multi_provider = [c for c in components if len(c) > 1]
+    alerts = get_cluster_alerts(G)
 
-    if not multi_provider:
+    if not alerts:
         print("\n  No multi-provider clusters detected.")
         return
+
+    fraud_notes = {
+        "UNBUNDLING":             "Review NCCI edits and EOB patterns for systematic code-splitting across all named providers.",
+        "UPCODING":               "Pull E&M documentation and compare complexity justification against diagnosis severity.",
+        "ICD_CPT_MISMATCH":       "Request operative and clinical records to verify procedure-diagnosis alignment.",
+        "MEDICALLY_UNNECESSARY":  "Obtain clinical records and prior-auth history to assess medical necessity.",
+    }
 
     print("\n" + "█" * 65)
     print("  MEDIAGUARD AI — SCHEME-LEVEL CLUSTER ALERTS")
     print("█" * 65)
 
-    for i, cluster in enumerate(multi_provider, 1):
-        members     = list(cluster)
-        states      = sorted({G.nodes[n]["state"] for n in members})
-        fraud_types = Counter(G.nodes[n]["dominant_fraud"] for n in members)
-        dominant_fraud = fraud_types.most_common(1)[0][0]
-
-        total_claims    = sum(G.nodes[n]["claim_count"] for n in members)
-        avg_risk        = sum(G.nodes[n]["avg_risk_score"] for n in members) / len(members)
-        provider_names  = sorted(G.nodes[n]["name"] for n in members)
-
-        # Collect all CPT codes shared by at least two members in this cluster
-        shared_cpts: set = set()
-        for u, v in G.edges(members):
-            if v in cluster:
-                shared_cpts |= G[u][v].get("shared_cpts", set())
-        shared_cpts.discard("")
-
-        # Collect all shared fraud labels within the cluster
-        shared_fraud_labels: set = set()
-        for u, v in G.edges(members):
-            if v in cluster:
-                shared_fraud_labels |= G[u][v].get("shared_fraud", set())
-
-        # Recommended action based on cluster avg risk
-        if avg_risk >= 80:
-            action = "Immediate joint SIU investigation — refer to OIG."
-        elif avg_risk >= 60:
-            action = "Joint SIU investigation with prepayment audit."
-        else:
-            action = "Enhanced monitoring — flag for coordinated review."
-
-        # Fraud-type-specific investigative note
-        fraud_notes = {
-            "UNBUNDLING":             "Review NCCI edits and EOB patterns for systematic code-splitting across all named providers.",
-            "UPCODING":               "Pull E&M documentation and compare complexity justification against diagnosis severity.",
-            "ICD_CPT_MISMATCH":       "Request operative and clinical records to verify procedure-diagnosis alignment.",
-            "MEDICALLY_UNNECESSARY":  "Obtain clinical records and prior-auth history to assess medical necessity.",
-        }
-        investigation_note = fraud_notes.get(dominant_fraud, "Conduct multi-provider claims audit.")
-
-        cpt_str   = ", ".join(sorted(shared_cpts))   if shared_cpts   else "none identified"
-        fraud_str = ", ".join(sorted(shared_fraud_labels)) if shared_fraud_labels else dominant_fraud
+    for i, alert in enumerate(alerts, 1):
+        cpt_str   = ", ".join(sorted(alert["shared_cpts"])) if alert["shared_cpts"] else "none identified"
+        fraud_str = ", ".join(sorted(alert["shared_fraud_labels"])) if alert["shared_fraud_labels"] else alert["dominant_fraud"]
+        note      = fraud_notes.get(alert["dominant_fraud"], "Conduct multi-provider claims audit.")
 
         print(f"""
   ┌─ CLUSTER ALERT {i} {'─' * (47 - len(str(i)))}┐
 
-  Cluster Alert: {len(members)} providers across {len(states)} state(s) show a coordinated
-  {dominant_fraud} billing pattern.
+  Cluster Alert: {alert["provider_count"]} providers across {alert["state_count"]} state(s) show a coordinated
+  {alert["dominant_fraud"]} billing pattern.
 
-  Providers involved : {', '.join(provider_names)}
-  States             : {', '.join(states)}
+  Providers involved : {', '.join(alert["provider_names"])}
+  States             : {', '.join(alert["states"])}
   Shared fraud types : {fraud_str}
   Shared CPT codes   : {cpt_str}
-  Aggregate claims   : {total_claims}
-  Average risk score : {avg_risk:.1f}/100
+  Aggregate claims   : {alert["total_claims"]}
+  Average risk score : {alert["avg_risk"]:.1f}/100
 
-  Recommended action : {action}
-  Investigation note : {investigation_note}
+  Recommended action : {alert["action"]}
+  Investigation note : {note}
 
   └{'─' * 63}┘""")
 
