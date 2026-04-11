@@ -231,7 +231,7 @@ st.markdown(
 )
 
 # ── Tabs ─────────────────────────────────────────────────────────────────────
-tab1, tab2 = st.tabs(["🗂️ Flagged Claims", "🕸️ Provider Network"])
+tab1, tab2, tab3 = st.tabs(["🗂️ Flagged Claims", "🕸️ Provider Network", "📊 Evaluation Metrics"])
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -659,8 +659,13 @@ with tab2:
         },
     )
 
-    # ── Evaluation Metrics ────────────────────────────────────────────────────
-    st.markdown("<br>", unsafe_allow_html=True)
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# TAB 3 — Evaluation Metrics
+# ════════════════════════════════════════════════════════════════════════════
+with tab3:
+
     st.markdown(
         '<div class="section-header">Rule Engine Evaluation Metrics</div>',
         unsafe_allow_html=True,
