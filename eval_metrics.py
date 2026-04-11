@@ -86,7 +86,7 @@ ax.tick_params(axis="x", labelrotation=30, labelsize=9)
 ax.tick_params(axis="y", labelrotation=0,  labelsize=9)
 plt.tight_layout()
 
-heatmap_path = "output/confusion_matrix.png"
+heatmap_path = "assets/confusion_matrix.png"
 plt.savefig(heatmap_path, dpi=150, bbox_inches="tight", facecolor="white")
 plt.close()
 
@@ -137,7 +137,7 @@ metrics_out = {
     "heatmap_path": heatmap_path,
 }
 
-json_path = "output/eval_metrics.json"
+json_path = "assets/eval_metrics.json"
 with open(json_path, "w") as f:
     json.dump(metrics_out, f, indent=2)
 

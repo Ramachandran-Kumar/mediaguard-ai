@@ -667,7 +667,7 @@ with tab2:
     )
 
     try:
-        with open("output/eval_metrics.json") as _f:
+        with open("assets/eval_metrics.json") as _f:
             _em = json.load(_f)
         _ov = _em["overall"]
 
@@ -690,7 +690,7 @@ with tab2:
 
         st.markdown("<br>", unsafe_allow_html=True)
         st.image(
-            "output/confusion_matrix.png",
+            "assets/confusion_matrix.png",
             caption="Confusion Matrix — Rule Engine vs Ground Truth",
             use_container_width=False,
             width=700,
