@@ -659,6 +659,50 @@ with tab2:
         },
     )
 
+    # ── Evaluation Metrics ────────────────────────────────────────────────────
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-header">Rule Engine Evaluation Metrics</div>',
+        unsafe_allow_html=True,
+    )
+
+    try:
+        with open("output/eval_metrics.json") as _f:
+            _em = json.load(_f)
+        _ov = _em["overall"]
+
+        _e1, _e2, _e3, _e4 = st.columns(4)
+        for _col, _label, _key in [
+            (_e1, "Accuracy",  "accuracy"),
+            (_e2, "Precision", "precision"),
+            (_e3, "Recall",    "recall"),
+            (_e4, "F1 Score",  "f1"),
+        ]:
+            _pct = f"{_ov[_key] * 100:.1f}%"
+            with _col:
+                st.markdown(
+                    f'<div class="kpi-card">'
+                    f'<div class="kpi-label">{_label}</div>'
+                    f'<div class="kpi-value" style="color:#16A34A;">{_pct}</div>'
+                    f'</div>',
+                    unsafe_allow_html=True,
+                )
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.image(
+            "output/confusion_matrix.png",
+            caption="Confusion Matrix — Rule Engine vs Ground Truth",
+            use_container_width=False,
+            width=700,
+        )
+        st.markdown(
+            '<p style="color:#94A3B8;font-size:.78rem;margin-top:.5rem;">'
+            'Evaluated on 33 synthetic claims. Real-world performance will vary.</p>',
+            unsafe_allow_html=True,
+        )
+    except FileNotFoundError:
+        st.info("Run eval_metrics.py to generate evaluation data.")
+
 
 # ── Footer ────────────────────────────────────────────────────────────────────
 st.divider()
