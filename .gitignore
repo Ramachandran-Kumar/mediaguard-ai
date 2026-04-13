@@ -1,10 +1,18 @@
 # Large CMS data files
-data/*.CSV
 data/*.csv
+data/*.CSV
 data/*.xlsx
 data/*.xls
 data/*.zip
-data/DE1_0_2008_to_2010_Carrier_Claims_Sample_1A.csv
+
+# PDFs and Office binaries
+*.pdf
+*.xlsx
+*.zip
+
+# Generated databases and vector stores
+data/*.db
+data/chroma_pos_store/
 
 # Pipeline outputs
 output/
@@ -12,4 +20,7 @@ output/
 # Python
 __pycache__/
 *.pyc
-.env 
+.env
+
+# Claude Code internal state
+.claude/
