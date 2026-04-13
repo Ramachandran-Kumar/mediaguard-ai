@@ -1,8 +1,0 @@
-provider_npi,provider_name,provider_specialty,provider_state,total_claims,total_billed,avg_billed,unique_patients,pct_99215,weekend_billing_rate,high_risk_claims,flagged_claims,avg_composite_risk,max_composite_risk,flag_rate_pct
-1234567893,Dr. James Williams,Cardiology,NY,3,1009.0,336.33,2,0.0,66.7,2,2,79.9,100.0,66.7
-1234567894,Dr. Linda Martinez,Neurology,OH,2,924.0,462.0,1,0.0,0.0,1,2,79.4,91.0,100.0
-1234567896,Dr. Karen Wilson,Dermatology,IL,4,1848.0,462.0,2,0.0,0.0,2,4,79.4,91.0,100.0
-1234567892,Dr. Patricia Moore,Orthopedic Surgery,CA,8,100000.0,12500.0,8,0.0,25.0,5,8,66.4,75.2,100.0
-1234567897,Dr. Thomas Brown,Gastroenterology,PA,7,5174.0,739.14,6,0.0,14.3,2,7,42.5,96.6,100.0
-1234567891,Dr. Michael Chen,Family Practice,FL,10,282.0,28.2,10,0.0,30.0,0,5,25.8,46.8,50.0
-1234567890,Dr. Sarah Johnson,Internal Medicine,TX,21,3821.0,181.95,21,73.3,38.1,0,5,19.1,59.2,23.8
